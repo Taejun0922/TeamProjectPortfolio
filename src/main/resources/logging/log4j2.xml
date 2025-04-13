@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configurations status="INFO" monitorInterval="30">
+  <Properties>
+    <Property name="LOG_FORMAT">
+<!--      날짜와 시간, 출력 형태 포맷 -->
+      %d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+    </Property>
+<!--      로깅 기록을 로컬 파일로 저장할 위치 설정 -->
+    <Property name="BASE_DIR">D:/log</Property>
+  </Properties>
+  <Appenders>
+    <Console name="Console-Appender" target="SYSTEM_OUT" follow="true">
+      <PatternLayout pattern="${LOG_FORMAT}" />
+    </Console>
+<!--    로컬에 저장할 파일 관련 설정 -->
+    <RollingFile name="File-Appender" fileName="${BASE_DIR}/monitor.log" filePattern="${BASE_DIR}/%d{yyyy-MM-dd}.log.zip">
+      <PatternLayout pattern="${LOG_FORMAT}" />
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10KB"/>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+      </Policies>
+      <DefaultRolloverStrategy>
+<!--        로그 파일 삭제 조건 : 4개를 초과할 때 이전 파일 삭제, log 파일만 삭제, 3일을 초과한 파일만 삭제 -->
+        <Delete basePath="${BASE_DIR}">
+          <IfAccumulateFileCount exceeds="4"/>
+          <IfFileName glob="*.log"/>
+          <IfLastModified age="3d"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+  </Appenders>
+  <Loggers name="org.sbproject03">
+    <Root level="INFO">
+      <AppenderRef ref="Console-Appender" />
+    </Root>
+    <Logger name="com.sbproject03.interceptor.MonitoringInterceptor" level="INFO" additivity="true">
+      <AppenderRef ref="File-Appender"/>
+    </Logger>
+  </Loggers>
+</Configurations>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>main</title>
+
+
+  <!-- js 경로 설정 -->
+  <script th:src="@{/js/category.js}"></script>
+  <script th:src="@{/js/slider.js}"></script>
+  <script th:src="@{/js/member.js}"></script>
+  <script th:src="@{/js/main.js}"></script>
+  <script th:src="@{/js/findAddress.js}"></script>
+
+  <!-- css 경로 설정 -->
+  <link th:href="@{/css/top.css}" rel="stylesheet">
+  <link th:href="@{/css/bottom.css}" rel="stylesheet">
+  <link th:href="@{/css/main.css}" rel="stylesheet">
+
+  <script th:inline="javascript">
+    let productData = /*[[${productByCategory}]]*/ {};
+  </script>
+</head>
+<body>
+<div id="wrap">
+  <!-- 헤더 -->
+  <th:block th:replace="~{/module/top.html}"></th:block>
+
+  <!-- 상단: 슬라이드, 카테고리 버튼 -->
+  <div class="my-container">
+    <div class="container">
+      <!-- 상단: 캐러셀 슬라이드 -->
+      <div id="topCarousel" class="carousel slide mb-15">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#topCarousel" data-bs-slide-to="0" aria-label="Slide 1" class="active" aria-current="true"></button>
+          <button type="button" data-bs-target="#topCarousel" data-bs-slide-to="1" aria-label="Slide 2" class=""></button>
+          <button type="button" data-bs-target="#topCarousel" data-bs-slide-to="2" aria-label="Slide 3" class=""></button>
+          <button type="button" data-bs-target="#topCarousel" data-bs-slide-to="3" aria-label="Slide 4" class=""></button>
+          <button type="button" data-bs-target="#topCarousel" data-bs-slide-to="4" aria-label="Slide 5" class=""></button>
+        </div>
+        <div class="carousel-inner rounded">
+          <a href="#">
+            <div class="carousel-item active">
+              <img th:src="@{/images/slider_main01_edit.jpg}" width="100%">
+            </div>
+          </a>
+          <a href="#">
+          <div class="carousel-item">
+            <img th:src="@{/images/slider_main02_edit.jpg}" width="100%">
+          </div>
+          </a>
+          <a href="#">
+          <div class="carousel-item">
+            <img th:src="@{/images/slider_main03_edit.jpg}" width="100%">
+          </div>
+          </a>
+          <a href="#">
+          <div class="carousel-item">
+            <img th:src="@{/images/slider_main04_edit.jpg}" width="100%">
+          </div>
+          </a>
+          <a href="#">
+          <div class="carousel-item">
+            <img th:src="@{/images/slider_main05_edit.jpg}" width="100%">
+          </div>
+          </a>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#topCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#topCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      <!-- 상단: 카테고리 메뉴 -->
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-5 col-md-3 col-lg-2 text-center">
+            <a href="/CampingMarket/category/TENT" class="text-decoration-none category-card w-75">
+              <img th:src="@{/images/tc_01.jpg}" class="category-img img-fluid rounded">
+              <span class="category-text  w-25 mx-auto">텐트</span>
+            </a>
+          </div>
+
+
+          <div class="col-5 col-md-3 col-lg-2 text-center">
+            <a href="/CampingMarket/category/SLEEPING_BAG" class="text-decoration-none category-card w-75">
+              <img th:src="@{/images/tc_02.jpg}" class="category-img img-fluid rounded">
+              <span class="category-text w-25 mx-auto">침낭</span>
+            </a>
+          </div>
+          <div class="col-5 col-md-3 col-lg-2 text-center">
+            <a href="/CampingMarket/category/GADGET" class="text-decoration-none category-card w-75">
+              <img th:src="@{/images/tc_03.jpg}" class="category-img img-fluid rounded">
+              <span class="category-text w-25 mx-auto">가구</span>
+            </a>
+          </div>
+          <div class="col-5 col-md-3 col-lg-2 text-center">
+            <a href="/CampingMarket/category/COOKER" class="text-decoration-none category-card w-75">
+              <img th:src="@{/images/tc_05.jpg}" class="category-img img-fluid rounded">
+              <span class="category-text w-25 mx-auto">도구</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중단: 슬라이드, 텍스트 박스 -->
+  <div class="my-container">
+    <div class="container py-5">
+      <h2 class="text-center fw-bold">BEST ITEM</h2>
+      <p>금주의 베스트 상품을 지금 바로 만나보세요</p>
+      <!-- 중단1: 제품 슬라이더 -->
+      <div id="middleCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner ps-7 pe-7">
+          <div class="carousel-item" th:each="productGroup, iterStat : ${bestItemGroup}" th:classappend="${iterStat.first} ? 'active'">
+            <div class="d-flex justify-content-center gap-3 middleCarousel_container">
+              <!-- 리스트 반복 -->
+              <div class="col-md-2 slider-product" th:each="product : ${productGroup}">
+                <a th:href="@{/product/{id}(id=${product.productId})}" class="border border-0">
+                  <img th:src="@{/productImages/IMG_{id}.jpg(id=${product.productId})}" class="d-block w-100 rounded">
+                </a>
+                <div class="text-box">
+                  <p th:text="${product.productName}"></p>
+                  <p th:text="${#numbers.formatInteger(product.productPrice, 3, 'COMMA')} + '원'" class="m-0"></p>
+                  <p>
+                    <span class="discount-box">50%</span>
+                    <span th:text="${#numbers.formatInteger(product.productPrice/2, 3, 'COMMA') + '원'}"></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 좌우 컨트롤 버튼 -->
+        <button class="carousel-control-prev" type="button" id="prevBtn">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" id="nextBtn">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+
+      <!-- 중단 하단 박스 -->
+      <div class="container-fluid bottom-box d-flex justify-content-center align-items-center rounded">
+        <h1 class="text-white text-center border border-white border-5 px-5 py-3">WILD LIFE</h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중단: 카테고리 상품 -->
+  <div class="my-container">
+    <div class="container py-5">
+      <h2 class="text-center fw-bold">ALL PRODUCT</h2>
+      <!-- 카테고리 필터 버튼 -->
+      <div class="category-buttons d-flex justify-content-center gap-3 my-4">
+        <button class="btn category-btn" data-product-category="productCategory_1" value="productCategory_1">TENT</button>
+        <button class="btn category-btn" data-product-category="productCategory_2" value="productCategory_2">SLEEPING</button>
+        <button class="btn category-btn" data-product-category="productCategory_3" value="productCategory_3">GADGET</button>
+        <button class="btn category-btn" data-product-category="productCategory_4" value="productCategory_4">COOKER</button>
+      </div>
+      <!-- 상품 리스트 (카테고리별 8개씩 표시) -->
+      <div class="product-list ps-5">
+        <div class="row row-cols-4 row-cols-sm-2 row-cols-md-4 row-cols-lg-4 g-4" id="productContainer">
+          <div class="col" th:each="product : ${productByCategory['productCategory_1'] ?: {}}">
+            <a th:href="@{/product/{id}(id=${product.productId})}" class="text-decoration-none text-dark">
+              <div class="card shadow-sm">
+                <img th:src="@{/productImages/IMG_{id}.jpg(id=${product.productId})}" class="card-img-top">
+                <div class="card-body">
+                  <h6 class="card-title" th:text="${product.productName}"></h6>
+                  <p class="text-muted small mb-0" th:text="${product.productDescription}"></p>
+                  <p class="text-muted mb-0" th:text="${#numbers.formatInteger(product.productPrice, 3, 'COMMA')} + '원'"></p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중단: 이벤트 배너 -->
+  <div class="my-container">
+    <div class="container">
+      <div class="row justify-content-center gy-4 pt-5">
+        <!-- 추천 상품 -->
+        <div class="col-md-6">
+          <div class="product-content p-4 shadow rounded position-relative">
+            <a href="/CampingMarket/category/GADGET">
+              <img src="images/tableandchair.jpg" class="img-fluid w-100 rounded position-absolute top-0 start-0 opacity-75">
+              <p class="fw-bold fs-5 position-absolute bottom-20 end-0 translate-middle-x text-light fs-5 fw-bold">테이블 & 의자 모음전</p>
+              <button class="btn btn-outline-light product-btn rounded-pill position-absolute bottom-0 end-0 m-3 fw-bold">
+                Lead More
+              </button>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="product-content p-4 shadow rounded position-relative">
+            <a href="/CampingMarket/category/GADGET">
+              <img src="images/winter-camping.jpg" class="img-fluid w-100 rounded position-absolute top-0 start-0 opacity-75">
+              <p class="fw-bold fs-5 position-absolute top-20 end-0 translate-middle-x text-light fs-5 fw-bold">겨울 방한 캠핑 아이템 특가</p>
+              <button class="btn btn-outline-light product-btn rounded-pill position-absolute bottom-0 end-0 m-3 fw-bold">
+                Lead More
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이벤트 배너 -->
+      <div class="event-banner mt-5 position-relative">
+        <img src="images/Untitled-1.jpg" class="img-fluid w-100 rounded">
+        <!--<p class="position-absolute bottom-0 start-50 translate-middle-x text-light fs-5 fw-bold">more ></p>-->
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단: 리뷰, 공지사항 -->
+  <div class="my-container">
+    <div class="container">
+      <div class="bottom-content">
+        <!-- 리뷰 -->
+        <!--<div class="review-container pt-5">
+          &lt;!&ndash; 리뷰 타이틀 &ndash;&gt;
+          <div class="col-12 text-start ps-4 ms-3 mb-5">
+            <h4 class="fw-bold text-dark">후기 <small class="fw-normal h6">REVIEW</small></h4>
+          </div>
+          <div class="review-content">
+            &lt;!&ndash; 하단: 리뷰 캐러셀 슬라이드 &ndash;&gt;
+            <div id="bottomCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <div class="row justify-content-center">
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_01.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">가볍고 설치가 쉬워서 너무 만족합니다!</p>
+                          <p class="review-name">abc***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_02.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">디자인도 예쁘고 사용감도 정말 좋아요.</p>
+                          <p class="review-name">xyz***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_03.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">가격 대비 품질이 조금 아쉽습니다.</p>
+                          <p class="review-name">qwe***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_04.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">친구 추천으로 샀는데 정말 대만족이에요!</p>
+                          <p class="review-name">asd***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_05.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">배송이 빨라서 좋아요~</p>
+                          <p class="review-name">zxc***</p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                &lt;!&ndash; 추가적인 슬라이드 &ndash;&gt;
+                <div class="carousel-item">
+                  <div class="row justify-content-center">
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_07.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">휴대하기 간편하고 실용성이 높아요.</p>
+                          <p class="review-name">hjk***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_08.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">캠핑 초보에게 딱 좋은 제품 같아요.</p>
+                          <p class="review-name">pqr***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_09.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">제품은 괜찮은데 설명서가 조금 부족했어요.</p>
+                          <p class="review-name">lmn***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_10.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">서비스 응대도 친절하고 제품 퀄리티도 좋아요!</p>
+                          <p class="review-name">vbn***</p>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-2 review-box">
+                      <a href="#" class="review-card">
+                        <div class="review-img rounded">
+                          <img th:src="@{/images/review_11.jpg}" class="d-block">
+                        </div>
+                        <div class="review-text">
+                          <p class="review-summary">가성비 좋은 제품이라 추천할 만합니다.</p>
+                          <p class="review-name">ghi***</p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              &lt;!&ndash; 좌우 컨트롤 버튼 &ndash;&gt;
+              <button class="carousel-control-prev" type="button" data-bs-target="#bottomCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#bottomCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button>
+            </div>
+          </div>
+        </div>-->
+        <!-- 공지사항 -->
+        <div class="notice-container pt-5">
+          <div class="row">
+            <!-- 공지사항 타이틀 -->
+            <div class="col-12 text-start ps-5 ms-1">
+              <h4 class="fw-bold text-dark">공지사항 <small class="fw-normal h6">NOTICE</small>
+                <button id="notice-btn" class="notice-button h6"><a href="/CampingMarket/notice/list" class="text-dark text-decoration-none">+</a></button>
+              </h4>
+            </div>
+            <!-- 공지사항 리스트 -->
+            <div class="row justify-content-center text-start g-4 ps-5 pe-5 pb-5">
+              <div class="col-md-3" th:each="notice : ${notices}">
+                <a th:href="@{/notice/view/{id}(id=${notice.id})}" class="notice-card d-flex flex-column p-3">
+                  <!-- 공지 제목 -->
+                  <p class="fs-5 ms-2" th:text="'[NOTICE] ' + ${notice.noticeSubject}"></p>
+                  <!-- 작성일 (yyyy.MM.dd 형식으로 출력) -->
+                  <p class="text-muted text-start ms-3" th:text="${#temporals.format(notice.createdDate, 'yyyy.MM.dd')}"></p>
+                  <div class="notice-icon">❯</div>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>

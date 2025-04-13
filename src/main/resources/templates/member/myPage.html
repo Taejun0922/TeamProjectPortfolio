@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>$Title$</title>
+</head>
+<body>
+$END$
+<a sec:authorize="isAuthenticated()" class="nav-link mt-2 mx-2" href="#"><span sec:authentication="name" class="text-primary fw-bold"></span>님</a>
+<a sec:authorize="hasRole('ROLE_USER')" class="nav-link mt-2 mx-2" href="#">유저의 권한</a>
+<a sec:authorize="hasRole('ROLE_ADMIN')" class="nav-link mt-2 mx-2" href="#">관리자의 권한</a>
+<a sec:authorize="isAnonymous()" class="nav-link mt-2 mx-2" href="#">로그인</a>
+</body>
+</html>

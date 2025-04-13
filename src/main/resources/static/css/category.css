@@ -1,0 +1,104 @@
+/*********************************************************************************************** 아코디언 메뉴 ************/
+/* 노배경 */
+.accordion-button {
+    background-color: transparent !important;
+}
+/* 노테두리 */
+.accordion-button,
+.accordion-item {
+    border: none !important;
+    box-shadow: none !important;
+}
+/* 클릭시 노배경 */
+.accordion-button:not(.collapsed) {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.img-box {
+    height: 430px;
+    margin-top: 100px;
+}
+
+
+
+/********************************************************************************************** 카테고리 별 상품 **+++++**/
+/* 버튼 */
+.category-btn {
+    border: none;
+    background: none;
+}
+.category-btn:hover {
+    background-color: #343a40;
+    color: #fff;
+}
+
+
+/* 리스트 스타일 */
+.product-list {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+}
+.list {display: none;}
+.list.active {display: block;}
+/* 카드 스타일 */
+.card {
+    width: 270px;
+    max-width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+    overflow: hidden;
+}
+/* 호버 */
+.card:hover {box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); border: 1px solid #343a40;}
+/* 상품 이미지 */
+.card img {
+    height: 230px;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+}
+/* 할인 배지 */
+.badge {font-size: 14px;}
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .card img {height: 200px;}
+}
+
+
+/********************************************************************************************** 추가 ************+++++**/
+/*카테고리 CSS 추가*/
+.category-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 500;
+    padding: 5px 10px; /* 클릭할 영역 확대 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    transition: all 0.3s ease-in-out;
+}
+
+.category-link:hover {
+    background-color: #f0f0f0; /* 배경색 강조 */
+    text-decoration: none;
+}
+
+/*페이지버튼 CSS 추가*/
+/* 페이지 번호 버튼의 활성화 스타일 */
+.review-btn button.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* 페이지 버튼 간격을 조정 */
+.review-btn button {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* 버튼 호버 효과 */
+.review-btn button:hover {
+    background-color: #0056b3;
+    color: white;
+}

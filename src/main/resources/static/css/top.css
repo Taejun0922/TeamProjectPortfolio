@@ -1,0 +1,119 @@
+/* 전체 설정 */
+* {margin:0; padding:0; box-sizing: border-box;}
+body {width: 100%; height: 100%; overflow-x: hidden; font-family: 'Montserrat', 'pretendard', sans-serif;}
+#wrap {width: 100%; }
+.my-container {width: 100%; text-align: center; max-width: 1920px; min-width: 400px; margin: 0 auto;}
+
+/* 헤더 */
+header {min-height: 120px;}
+/* 로고 */
+.logo_img {width: 350px;}
+/* 검색창 */
+.search_input {
+    width: 180px;
+    height: 32px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.search_button {
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    padding: 5px;
+}
+.search_icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+/* 헤더 네비게이션 메뉴 */
+.navbar-nav .nav-link {
+    font-size: 14px;
+    color: black;
+    padding: 5px 10px;
+}
+/* 호버 */
+.navbar-nav .nav-link:hover {text-decoration: underline;}
+
+
+/* 로그인, 회원가입 박스 스타일 */
+.login-box {position: relative;}
+/* 로그인 폼 스타일 */
+#loginForm {width: 350px; z-index: 1050;}
+/* 로그인, 회원가입 버튼 클릭 시 포커스 스타일 */
+.login-box .nav-link:focus {outline: none;}
+
+/* 모달 크기 조정 */
+.modal-content {border-radius: 10px;}
+/* 회원가입 버튼 스타일 */
+.nav-link {cursor: pointer;}
+/* 모달 내 입력 폼 스타일 */
+.modal-body .form-control {padding: 10px; font-size: 14px;}
+/* 버튼 스타일 */
+.modal-body .btn {font-weight: bold;}
+
+#insertModalLabel {margin-left: 200px;}
+#loginForm .form-label {width: 305px; text-align: left;}
+#insertForm .form-label {width: 450px; text-align: left;}
+
+/* 아이디 저장 체크박스 스타일 */
+.form-check-input {cursor: pointer;}
+/* 아이디 찾기, 비밀번호 찾기 링크 스타일 */
+.find-links a {color: #6c757d; transition: all 0.3s;}
+.find-links a:hover {font-weight: 600; color: #343a40;}
+
+
+/* 메뉴 공통 스타일 */
+.dropdown {margin: 0 20px;}
+.dropdown button:hover {background-color: #212529; color: #fff;}
+/* 메가메뉴 스타일 */
+.mega-menu {position: relative;}
+/* 드롭다운 메뉴 스타일 */
+.mega-dropdown {
+    width: 720px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 1000;
+}
+/* 호버 시 드롭다운 표시 */
+.mega-menu:hover .mega-dropdown {display: block;}
+/* 컬럼 내부 스타일 */
+.mega-dropdown .col-md-2 {text-align: center;}
+.row .col-box {margin: 0; padding: 0;}
+.mega-dropdown p {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.mega-dropdown a {
+    display: block;
+    padding: 5px;
+    width: 100%;
+    margin: 0 auto;
+}
+.mega-dropdown a:hover {background-color: #e2e2e2;}
+
+/* 드롭다운 버튼 기본 스타일 */
+.dropdown button {width: 110px; text-align: center;}
+/* 드롭다운 메뉴 스타일 */
+.dropdown-menu {
+    width: 110px;
+    /*margin-top: 7px;*/
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.dropdown-menu a {text-align: center;}
+/* 드롭다운 항목 스타일 */
+.dropdown-item {padding: 10px; font-size: 14px;}
+/* 호버 시 드롭다운 표시 */
+.dropdown:hover .dropdown-menu {display: block;}
+/* 호버 시 배경색 변경 */
+.dropdown-item:hover {background-color: #f0f0f0;}
+/* 드롭다운 화살표 제거 */
+.dropdown-toggle::after {display: none;}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>category</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- js 경로 설정 -->
+    <script th:src="@{/js/category.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+
+    <!-- css 경로 설정 -->
+    <link th:href="@{/css/top.css}" rel="stylesheet">
+    <link th:href="@{/css/bottom.css}" rel="stylesheet">
+    <link th:href="@{/css/category.css}" rel="stylesheet">
+
+
+</head>
+<body>
+<div id="wrap">
+    <!-- 헤더 -->
+    <th:block th:replace="~{/module/top.html}"></th:block>
+
+    <!-- 본문: 카테고리 상품 -->
+    <div class="my-container">
+        <div class="d-flex justify-content-between align-items-start px-5">
+            <div class="w-25 p-5">
+                <div class="list-group">
+                    <form th:action="@{/category/all}" method="get">
+                        <button type="submit" class="list-group-item list-group-item-action"
+                                th:href="@{/category?page=${currentPage}&size=${pageSize}}">ALL</button>
+                    </form>
+                    <form th:action="@{/category/{category}(category=${'TENT'})}" method="get">
+                        <button type="submit" class="list-group-item list-group-item-action"
+                                th:href="@{/category/TENT?page=${currentPage}&size=${pageSize}}">TENT</button>
+                    </form>
+                    <form th:action="@{/category/{category}(category=${'SLEEPING_BAG'})}" method="get">
+                        <button type="submit" class="list-group-item list-group-item-action"
+                                th:href="@{/category/SLEEPING_BAG?page=${currentPage}&size=${pageSize}}">SLEEPING</button>
+                    </form>
+                    <form th:action="@{/category/{category}(category=${'GADGET'})}" method="get">
+                        <button type="submit" class="list-group-item list-group-item-action"
+                                th:href="@{/category/GADGET?page=${currentPage}&size=${pageSize}}">FURNITURE</button>
+                    </form>
+                    <form th:action="@{/category/{category}(category=${'COOKER'})}" method="get">
+                        <button type="submit" class="list-group-item list-group-item-action"
+                                th:href="@{/category/COOKER?page=${currentPage}&size=${pageSize}}">KITCHEN</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 카테고리별 상품 -->
+            <div class="container py-5 w-75">
+                <div class="bg-light py-5 rounded">
+                    <h2>카테고리 이름</h2>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class=""><span class="fw-bold">801</span> 상품</p>
+                    <div class="mb-3 d-flex align-items-center p-3 w-25">
+                        <select id="show-select" class="form-select w-50">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        </select>
+                        <select id="sort-select" class="form-select w-50 mx-3">
+                            <option value="asc">오름차순</option>
+                            <option value="desc">내림차순</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 상품 리스트 -->
+                <div class="product-list">
+                    <div class="product-list ps-5">
+                        <h4 th:text="${selectedCategory} != null ? '카테고리: ' + ${selectedCategory} : '전체 상품'"></h4>
+                        <div class="row row-cols-4 row-cols-sm-2 row-cols-md-4 row-cols-lg-4 g-4" id="productContainer">
+                            <div class="col-md-4 mb-3" th:each="product : ${products}">
+                                <a th:href="@{/product/{id}(id=${product.productId})}" class="text-decoration-none text-dark">
+                                <!--<a th:href="@{/category/{category}(category=${product.productCategory})}" class="text-decoration-none text-dark">-->
+                                    <div class="card shadow-sm">
+                                        <img th:src="@{/productImages/IMG_{id}.jpg(id=${product.productId})}" class="card-img-top">
+                                        <div class="card-body">
+                                            <h6 class="card-title" th:text="${product.productName}"></h6>
+                                            <p class="text-muted small mb-0" th:text="${product.productDescription}"></p>
+                                            <p class="text-muted mb-0" th:text="${#numbers.formatInteger(product.productPrice, 3, 'COMMA')} + '원'"></p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 페이지 버튼 -->
+                <div class="text-center mt-4 review-btn">
+                    <!-- 왼쪽 화살표 (이전 페이지) -->
+                    <a th:if="${currentPage > 0}" th:href="@{'/category/' + ${selectedCategory} + '?page=' + (${currentPage} - 1) + '&size=' + ${pageSize}}" class="btn btn-outline-dark me-2">&lt;</a>
+
+                    <!-- 페이지 번호 버튼들 -->
+                    <span th:each="i : ${#numbers.sequence(startPage, startPage + blockCount - 1)}"><span th:if="${i < totalPages}"><a th:href="@{'/category/' + ${selectedCategory} + '?page=' + ${i} + '&size=' + ${pageSize}}" class="btn btn-outline-dark me-2" th:text="${i + 1}" th:classappend="${i == currentPage ? 'active' : ''}"></a></span></span>
+
+                    <!-- 오른쪽 화살표 (다음 페이지) -->
+                    <a th:if="${currentPage < totalPages - 1}" th:href="@{'/category/' + ${selectedCategory} + '?page=' + (${currentPage} + 1) + '&size=' + ${pageSize}}" class="btn btn-outline-dark me-2">&gt;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>

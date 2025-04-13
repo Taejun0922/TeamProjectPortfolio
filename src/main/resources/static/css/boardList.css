@@ -1,0 +1,54 @@
+/* 후기 게시판 스타일 */
+.boardList {
+    background: #fff;
+    border-radius: 10px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+    width: 200px;
+    height: auto;
+    display: inline-block;
+}
+
+.review-board { width: 90%;}
+
+.search-rev {
+    width: 150px;
+    height: 35px;
+    border-radius: 4px;
+    font-size: 14px;
+
+}
+.search_button {
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.dropdown-board {
+    float: left;
+    width: 50px;
+}
+
+.search-board {
+    clear: both;
+    float: right;
+    width: 200px;
+}
+
+
+a .boardList-img {
+    float: left;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin: 2px;
+}
+
+tbody a { display: inline-block; list-style-type: none; text-decoration: none;}
+

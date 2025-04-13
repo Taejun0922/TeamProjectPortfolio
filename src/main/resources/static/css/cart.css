@@ -1,0 +1,47 @@
+/* 장바구니 스타일 */
+.shopping-cart {
+    background: #fff;
+    border-radius: 10px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 상품 이미지 */
+.cart-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 수량 조절 버튼 */
+.amount-btn button {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 테이블 스타일 */
+.table th, .table td {
+    padding: 15px 10px;
+    vertical-align: middle;
+}
+
+/* 총 결제 금액 */
+.cart-amount {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px 0;
+    text-align: right;
+}
+
+/* 장바구니 버튼 */
+.cart-btn .btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin: 5px;
+}

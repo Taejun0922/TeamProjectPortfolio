@@ -1,0 +1,23 @@
+.section_prod {
+  background: #fff;
+  text-align: center;
+}
+
+.section_prod a {
+  color: black;
+  text-decoration: none;
+}
+
+#purchaseBtn {
+  width: 100px;
+  padding: 5px;
+  background: black;
+  color: white;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+
+#editForm {
+  display: none;
+}

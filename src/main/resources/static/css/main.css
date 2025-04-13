@@ -1,0 +1,290 @@
+/************************************************************************************************ 상단 슬라이드 *********/
+/* 버튼 위치 조정 */
+#topCarousel .carousel-control-prev,
+#topCarousel .carousel-control-next {
+    width: 5%;  /* 버튼 너비 */
+    height: 50px; /* 버튼 높이 */
+    top: 50%; /* 수직 정렬 */
+    transform: translateY(-50%); /* 가운데 정렬 */
+    filter: invert(1);
+}
+#topCarousel .carousel-control-prev {
+    left: -60px; /* 왼쪽으로 */
+}
+#topCarousel .carousel-control-next {
+    right: -60px; /* 오른쪽으로 */
+}
+
+
+/************************************************************************************************ 카테고리 버튼 *********/
+/* 카테고리 스타일 */
+.category-card {
+    cursor: pointer; transition: transform 0.2s ease-in-out;
+}
+/* 이미지 스타일 */
+.category-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease;
+}
+/* 텍스트 스타일 */
+.category-text {
+    display: block;
+    margin-top: 8px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+/* 호버 */
+.category-card:hover {transform: scale(1.1);}
+.category-card:hover .category-img {box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.2);}
+.category-card:hover .category-text {font-weight: bold;}
+
+/******************************************************************************************** 추천 상품 슬라이드 *********/
+/* 캐러셀 컨테이너 */
+.middleCarousel_container {
+    display: flex;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    transition: transform 0.5s ease-in-out;
+}
+/* 제품 개별 박스 */
+.slider-product {
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    margin: 0 10px;
+    padding-top: 25px;
+}
+/* 제품 이미지 */
+.slider-product img {
+    width: 180px;
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.2s ease-in-out;
+}
+/* 호버 */
+.slider-product img:hover {transform: scale(1.1);}
+.slider-product:hover .text-box > p:nth-child(1) {text-decoration: underline;}
+/* 텍스트 박스 */
+.text-box {margin-top: 15px; color: black;}
+.text-box > p:nth-child(1) {font-weight: 700; font-size: 14px;}
+.text-box > p:nth-child(2) {
+    color: gray;
+    font-size: 12px;
+    text-decoration: line-through;
+}
+.text-box > p:nth-child(3) {font-weight: 700; font-size: 14px;}
+/* 할인 박스 */
+.discount-box {
+    color: yellow;
+    font-size: 10px;
+    margin-right: 5px;
+    background-color: black;
+    padding: 0 4px;
+}
+
+
+/* 버튼 위치 조정 */
+#middleCarousel .carousel-control-prev,
+#middleCarousel .carousel-control-next {
+    width: 5%;  /* 버튼 너비 */
+    height: 50px; /* 버튼 높이 */
+    top: 45%; /* 수직 정렬 */
+    transform: translateY(-50%); /* 가운데 정렬 */
+    filter: invert(1);
+}
+#middleCarousel .carousel-control-prev {
+    left: -60px; /* 왼쪽으로 */
+}
+#middleCarousel .carousel-control-next {
+    right: -60px; /* 오른쪽으로 */
+}
+
+/************************************************************************************************* 이미지 박스 **********/
+/* 하단 박스 배경 이미지 */
+.bottom-box {
+    height: 200px;
+    margin-top: 61px;
+    background-image: url(../images/bottom_box_image.jpg);
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/* 텍스트 스타일 */
+.bottom-box h1 {
+    font-size: 80px;
+    width: auto;
+    height: auto;
+    padding: 20px;
+    font-weight: bold;
+}
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .bottom-box {height: 200px;}
+    .bottom-box h1 {
+        font-size: 40px;
+        padding: 10px;
+        border-width: 5px;
+    }
+}
+
+/********************************************************************************************** 카테고리 별 상품 **+++++**/
+/* 버튼 */
+.category-btn {
+    border: none;
+    background: none;
+}
+.category-btn:hover {
+    background-color: #343a40;
+    color: #fff;
+}
+
+
+/* 리스트 스타일 */
+.product-list {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+}
+.list {display: none;}
+.list.active {display: block;}
+/* 카드 스타일 */
+.card {
+    width: 270px;
+    max-width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+    overflow: hidden;
+}
+/* 호버 */
+.card:hover {box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); border: 1px solid #343a40;}
+/* 상품 이미지 */
+.card img {
+    height: 230px;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+}
+/* 할인 배지 */
+.badge {font-size: 14px;}
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .card img {height: 200px;}
+}
+
+/*************************************************************************************************** 추천 **************/
+/* 추천 상품 (양옆으로 정렬) */
+.product-content {
+    background: #fff;
+    transition: box-shadow 0.3s ease;
+    height: 230px;
+}
+.product-content img {
+    height: 230px;
+
+}
+.product-content:hover {box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); cursor: pointer;}
+.product-btn {transition: 0.3s ease; font-size: 14px;}
+.product-btn:hover {background-color: gray; color: white;}
+
+/*************************************************************************************************** 배너 **************/
+.event-banner p {
+    font-style: italic;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+.event-banner p:hover {color: #eee;}
+
+/*************************************************************************************************** 리뷰 **************/
+/* 리뷰 카드 스타일 */
+.review-container .review-box {width: 210px; margin: 0 20px;}
+.review-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: black;
+    align-items: center;
+    max-width: 180px;
+}
+/* 이미지 컨테이너 */
+.review-img {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* 이미지 크기 */
+.review-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+/* 텍스트 스타일 */
+.review-text {
+    text-align: left;
+    font-size: 14px;
+    margin-top: 8px;
+}
+/* 호버 */
+.review-card:hover .review-summary {text-decoration: underline;}
+/* 버튼 위치 조정 */
+.review-container .carousel-control-prev,
+.review-container .carousel-control-next {
+    width: 5%;  /* 버튼 너비 */
+    height: 50px; /* 버튼 높이 */
+    top: 35%; /* 수직 정렬 */
+    transform: translateY(-50%); /* 가운데 정렬 */
+    filter: invert(1);
+}
+.review-container .carousel-control-prev {
+    left: -60px; /* 왼쪽으로 */
+}
+.review-container .carousel-control-next {
+    right: -60px; /* 오른쪽으로 */
+}
+
+/*************************************************************************************************** 공지사항 ***********/
+/* 카드 스타일 */
+.notice-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 200px;
+    text-decoration: none;
+    color: black;
+    border-left: 2px solid lightgray;
+    transition: 0.3s ease;
+}
+/* 날짜 */
+.notice-card p.text-muted {font-size: 14px;}
+/* 아이콘 */
+.notice-icon {
+    margin-top: 10px;
+    width: 50px;
+    height: 50px;
+    line-height: 46px;
+    text-align: center;
+    border-radius: 50%;
+    border: 1px solid lightgray;
+    color: #33363C;
+    transition: 0.3s ease-in-out;
+    font-size: 20px;
+}
+/* 호버 */
+.notice-card:hover .notice-icon {
+    background-color: gray;
+    color: white;
+    border: 1px solid gray;
+}
+/* 버튼 */
+.notice-button {
+    border: none;
+    background: none;
+    margin-left: 5px;
+}
+

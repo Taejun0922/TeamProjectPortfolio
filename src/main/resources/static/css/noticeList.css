@@ -1,0 +1,4 @@
+/* boardTitle 설정 */
+.container { width: 1500px; margin: 10px auto; text-align: center;}
+.notice-subject { text-decoration: none; color: black; text-align: center;}
+.paging-notice { clear: both; float: right; width: 200px;}
