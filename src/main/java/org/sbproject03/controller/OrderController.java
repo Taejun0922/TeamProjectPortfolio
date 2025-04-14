@@ -36,9 +36,10 @@ public class OrderController {
     model.addAttribute("member", member);
 
     List<CartItems> cartItems = cartItemService.getCartItems(member.getCartId());
-    List<ProductInfo> productInfoList = new ArrayList<ProductInfo>();
-    for(CartItems item : cartItems) {
-      Product product = productService.getProductById(item.getProductId());
+    List<ProductInfo> productInfoList = new ArrayList<>();
+
+    for (CartItems item : cartItems) {
+      Product product = item.getProduct(); // 🔥 이미 연관된 Product 객체
       ProductInfo productInfo = new ProductInfo();
       productInfo.setProductId(product.getProductId());
       productInfo.setProductName(product.getProductName());
@@ -46,9 +47,11 @@ public class OrderController {
       productInfo.setQuantity(item.getQuantity());
       productInfoList.add(productInfo);
     }
+
     model.addAttribute("cartItems", productInfoList);
     return "order/orderCustomerInfo";
   }
+
 
   @PostMapping
   public String orderPro() {

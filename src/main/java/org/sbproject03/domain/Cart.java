@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @Data
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "member")
 @Entity
 public class Cart {
 

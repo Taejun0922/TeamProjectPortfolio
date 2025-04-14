@@ -12,6 +12,7 @@ import org.sbproject03.service.CartService;
 import org.sbproject03.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -40,6 +41,14 @@ public class CartController {
     Cart cart = getCart(); // 카트 조회 메서드
     String cartId = cart.getCartId().toString(); // cartId는 이제 Long 타입이 아니라 자동 생성됨
     List<CartItems> cartItems = cartItemService.getCartItems(cartId); // 장바구니 항목 조회
+
+    // 로그 출력
+    System.out.println("===== 카트 정보 =====");
+    System.out.println("cartId: " + cartId);
+    System.out.println("totalPrice: " + cart.getTotalPrice());
+    System.out.println("cart 객체: " + cart);
+    System.out.println("=====================");
+
     mav.addObject("cart", cart);
     mav.addObject("cartItems", cartItems);
     mav.setViewName("cart/cart");
@@ -48,39 +57,40 @@ public class CartController {
 
   // 장바구니 상품 추가
   @PostMapping
-  public String addCartItem(@RequestParam(value="productId") String productId, @RequestParam(value="quantity") int quantity, HttpServletRequest request) {
+  public String addCartItem(@RequestParam("productId") String productId, @RequestParam("quantity") int quantity) {
     Cart cart = getCart();
-    String cartId = cart.getCartId().toString(); // cartId는 이제 Long 타입이므로 toString()을 사용
-    boolean flag = false;
+    String cartId = cart.getCartId().toString();
 
-    // 카트에 상품이 있을 경우 카트에 상품 개수 추가
+    Product product = productService.getProductById(productId);
+
+    boolean found = false;
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
     for (CartItems cartItem : cartItems) {
-      if (cartItem.getProductId().equals(productId)) {
+      if (cartItem.getProduct().getProductId().equals(productId)) {
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
         cartItemService.save(cartItem);
-        flag = true; // 추가
-        break; // 중복 상품 찾았으면 루프 종료
+        found = true;
+        break;
       }
     }
-    if(!flag) {
-      CartItems cartItem = new CartItems(cartId, productId, quantity);
+    // 장바구니가 없을 때
+    if (!found) {
+      CartItems cartItem = new CartItems(cartId, product, quantity);
       cartItems.add(cartItem);
       cartItemService.save(cartItem);
     }
 
-    // 카트에 담긴 상품 가격 반영
     updateTotalPrice(cartId);
     return "redirect:/cart";
   }
 
+
   @DeleteMapping("/{productId}")
-  public String deleteCartItem(@PathVariable String productId, HttpServletRequest request) {
+  public String deleteCartItem(@PathVariable String productId) {
     Cart cart = getCart();
-    String cartId = cart.getCartId().toString(); // cartId는 Long 타입, toString() 사용
+    String cartId = cart.getCartId().toString();
     cartItemService.deleteCartItem(productId, cartId);
 
-    // 카트에 담긴 상품 가격 반영
     updateTotalPrice(cartId);
     return "redirect:/cart";
   }
@@ -110,17 +120,19 @@ public class CartController {
 
   // 카트 상품가격 업데이트 메서드 (매핑 X, 호출용)
   public void updateTotalPrice(String cartId) {
-    Cart cart = cartService.read(Long.parseLong(cartId)); // cartId는 Long 타입이므로 Long.parseLong 사용
+    Cart cart = cartService.read(Long.parseLong(cartId));
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
+
     int totalPrice = 0;
     for (CartItems item : cartItems) {
-      String productId = item.getProductId();
-      Product product = productService.getProductById(productId);
+      Product product = item.getProduct(); // 🔥 여기도 바로 접근
       totalPrice += product.getProductPrice() * item.getQuantity();
     }
+
     cart.setTotalPrice(totalPrice);
     cartService.save(cart);
   }
+
 
   // 수량 변화시 카트의 전체 가격업데이트
   @PostMapping("/update")
@@ -133,7 +145,7 @@ public class CartController {
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
 
     for (CartItems item : cartItems) {
-      if (item.getProductId().equals(request.getProductId())) {
+      if (item.getProduct().getProductId().equals(request.getProductId())) {
         item.setQuantity(request.getQuantity());
         cartItemService.save(item);
         targetItem = item;
@@ -145,7 +157,7 @@ public class CartController {
 
     int itemTotalPrice = 0;
     if (targetItem != null) {
-      Product product = productService.getProductById(targetItem.getProductId());
+      Product product = targetItem.getProduct();
       itemTotalPrice = product.getProductPrice() * targetItem.getQuantity();
     }
 
@@ -155,4 +167,5 @@ public class CartController {
 
     return response;
   }
+
 }

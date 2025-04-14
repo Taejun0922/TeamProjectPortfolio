@@ -13,7 +13,6 @@
   <link th:href="@{/css/bottom.css}" rel="stylesheet">
   <link th:href="@{/css/main.css}" rel="stylesheet">
   <link th:href="@{/css/cart.css}" rel="stylesheet">
-
 </head>
 <body>
 <div id="wrap">
@@ -41,87 +40,50 @@
           </tr>
           </thead>
           <tbody>
-          <div th:each="item : ${cartItems}"> <!-- 여기 확인 -->
-            <form action="" method="post"> <!-- 폼 -->
-              <tr>
-                <td class="text-center"><input type="checkbox" class="form-check-input cartChkOne"></td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img th:src="|/CampingMarket/images/IMG_${item.productId}.jpg|" class="cart-img me-3">
-                    <div>
-                      <p class="fw-bold mb-1" text=""></p>
-                      <!--<p class="text-muted small" th:text="${product.productName}"></p>-->
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="amount-btn d-flex align-items-center justify-content-center">
-                    <button class="btn btn-outline-dark btn-sm mx-1" id="decrease-btn">-</button>
-                    <!-- 밸류값 설정 -->
-                    <input type="text" name="quantity" id="quantity-input" th:value="${item.quantity}" min="1" readonly style="width: 40px; text-align: center;">
-                    <span class="mx-2 fw-bold" text=""></span>
-                    <button class="btn btn-outline-dark btn-sm mx-1" id="increase-btn">+</button>
-                  </div>
-                </td>
-                <td class="text-center fw-bold text-danger" text=""></td>
-            </form>
+          <tr th:each="item : ${cartItems}">
             <td class="text-center">
-              <form th:action="|/CampingMarket/cart/${item.productId}|" th:method="delete">
+              <input type="checkbox" class="form-check-input cartChkOne">
+            </td>
+            <td>
+              <div class="d-flex align-items-center">
+                <img th:src="|/CampingMarket/images/IMG_${item.product.productId}.jpg|" class="cart-img me-3">
+                <div>
+                  <p class="fw-bold mb-1" th:text="${item.product.productName}"></p>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="amount-btn d-flex align-items-center justify-content-center">
+                <button class="btn btn-outline-dark btn-sm mx-1" id="decrease-btn">-</button>
+                <input type="text" name="quantity" id="quantity-input" th:value="${item.quantity}" min="1" readonly style="width: 40px; text-align: center;">
+                <button class="btn btn-outline-dark btn-sm mx-1" id="increase-btn">+</button>
+              </div>
+            </td>
+            <td class="text-center fw-bold text-danger" th:text="${item.product.productPrice * item.quantity}"></td>
+            <td class="text-center">
+              <form th:action="@{|/CampingMarket/cart/${item.product.productId}|}" th:method="delete">
                 <button class="btn btn-outline-danger btn-sm">🗑 삭제</button>
               </form>
             </td>
-            </tr>
-          </div>
+          </tr>
           </tbody>
         </table>
       </div>
+
       <!-- 총 결제 금액 -->
       <div class="cart-amount text-end mt-4 p-3 border-top">
-        <!-- 수정해야함 -->
-        <h5><strong>총 결제 금액: <span class="text-danger fs-4">[[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]</span></strong></h5>
+        <h5>
+          <strong>총 결제 금액:
+            <span class="text-danger fs-4" th:text="${cart.totalPrice}"></span>
+          </strong>
+        </h5>
       </div>
+
       <!-- 버튼 그룹 -->
       <div class="d-flex justify-content-center mt-4 gap-3 cart-btn">
         <button th:onclick="|location.href='@{/main}'|" class="btn btn-outline-secondary">계속 쇼핑하기</button>
         <button th:onclick="|location.href='@{/order}'|" class="btn btn-dark">전체 주문하기</button>
       </div>
-
-      <!--<div class="d-flex justify-content-between align-items-center">
-        &lt;!&ndash;<h4 class="fw-bold text-start">주문 정보 조회</h4>&ndash;&gt;
-        &lt;!&ndash;<button class="btn btn-dark px-4" data-bs-toggle="modal" data-bs-target="#qnaModal">문의하기</button>&ndash;&gt;
-        &lt;!&ndash; 문의하기 모달 &ndash;&gt;
-        <div class="modal fade" id="qnaModal" tabindex="-1" aria-labelledby="qnaModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg"> &lt;!&ndash; modal-lg로 크기를 설정 &ndash;&gt;
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="qnaModalLabel">주문 정보 조회</h5>
-                &lt;!&ndash; '닫기' 버튼도 동일한 스타일로 적용 &ndash;&gt;
-                <button type="button" class="btn btn-dark btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form>
-                  <div class="mb-3">
-                    <label for="customerId" class="form-label">고객 아이디</label>
-                    <input type="text" class="form-control" id="customerId" placeholder="고객 아이디 입력" value="user123" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label for="qnaTitle" class="form-label">제목</label>
-                    <input type="text" class="form-control" id="qnaTitle" placeholder="제목을 입력하세요">
-                  </div>
-                  <div class="mb-3">
-                    <label for="qnaContent" class="form-label">내용</label>
-                    <textarea class="form-control" id="qnaContent" rows="4" placeholder="문의 내용을 입력하세요"></textarea>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">닫기</button>
-                <button type="submit" class="btn btn-primary">문의 등록</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>-->
     </div>
   </div>
 

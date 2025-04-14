@@ -1,9 +1,6 @@
 package org.sbproject03.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,12 +17,16 @@ public class CartItems {
     private Long id;
 
     private String cartRefId;
-    private String productId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
     private int quantity;
 
-    public CartItems(String cartId, String productId, int quantity) {
+    public CartItems(String cartId, Product product, int quantity) {
         this.cartRefId = cartId;
-        this.productId = productId;
+        this.product = product;
         this.quantity = quantity;
     }
 }

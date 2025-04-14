@@ -106,6 +106,19 @@ public class NoticeController {
             model.addAttribute("modifiedOK", true);
         }
 
+        // 로그인 여부 체크
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof org.springframework.security.core.userdetails.User) {
+            // 로그인된 사용자라면 사용자 정보를 가져오기
+            String userId = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+            Member member1 = memberService.getMemberById(userId);
+            model.addAttribute("member", member1);  // 로그인된 회원 정보 추가
+        } else {
+            // 로그인되지 않은 사용자라면 빈 객체 추가
+            model.addAttribute("newMember", new Member());  // 빈 객체
+        }
+
         return "notice/viewNotice";
     }
 
