@@ -6,6 +6,7 @@ import org.sbproject03.domain.Cart;
 import org.sbproject03.domain.CartItems;
 import org.sbproject03.domain.Member;
 import org.sbproject03.domain.Product;
+import org.sbproject03.dto.CartResponse;
 import org.sbproject03.dto.UpdateCartRequest;
 import org.sbproject03.service.CartItemService;
 import org.sbproject03.service.CartService;
@@ -137,7 +138,7 @@ public class CartController {
   // 수량 변화시 카트의 전체 가격업데이트
   @PostMapping("/update")
   @ResponseBody
-  public Map<String, Object> updateCartItemQuantity(@RequestBody UpdateCartRequest request) {
+  public CartResponse updateCartItemQuantity(@RequestBody UpdateCartRequest request) {
     Cart cart = getCart();
     String cartId = cart.getCartId().toString();
 
@@ -161,9 +162,8 @@ public class CartController {
       itemTotalPrice = product.getProductPrice() * targetItem.getQuantity();
     }
 
-    Map<String, Object> response = new HashMap<>();
-    response.put("itemTotalPrice", itemTotalPrice);
-    response.put("cartTotalPrice", cartService.read(Long.parseLong(cartId)).getTotalPrice());
+    // 응답 객체 생성
+    CartResponse response = new CartResponse(true, itemTotalPrice, cartService.read(Long.parseLong(cartId)).getTotalPrice());
 
     return response;
   }

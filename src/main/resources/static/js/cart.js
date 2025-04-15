@@ -1,82 +1,70 @@
-// document.addEventListener("DOMContentLoaded", () => {}) 를 사용하지 않아야 함.
-// cart 에 도서 추가
-function addCart(bookId) {
-    if(confirm("장바구니에 도서를 추가하겠습니까?") == true) {
-        document.addForm.action = "/BookMarket/cart/book/" + bookId; // 지정 경로로 이동
-        document.addForm.submit();
-    }
-}
+document.addEventListener("DOMContentLoaded", function() {
+  // 수량 변경 버튼을 찾고 클릭 시 동작을 설정
+  document.querySelectorAll('.increase-btn, .decrease-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      // 버튼 클릭 시 alert창 띄우기
+      alert('수량 변경 버튼이 클릭되었습니다!');
 
-// 카트 전체 삭제
-function clearCart(cartId) {
-   if(confirm("장바구니 전체를 삭제하겠습니까?") == true) {
-       document.clearForm.action = "/BookMarket/cart/" + cartId;
-       document.clearForm.submit();
-       setTimeout('location.reload(true)', 10);
-   }
-}
-// 카트 개별(1건) 삭제
-function removeCart(bookId) {
-   if(confirm("장바구니 항목을 삭제하겠습니까?") == true) {
-       document.removeForm.action = "/BookMarket/cart/book/" + bookId;
-       document.removeForm.submit();
-       setTimeout('location.reload(true)', 10);
-   }
-}
-document.addEventListener('DOMContentLoaded', function() {
-    const decreaseBtn = document.getElementById('decrease-btn');
-    const increaseBtn = document.getElementById('increase-btn');
-    const quantityInput = document.getElementById('quantity-input');
+      const productId = this.getAttribute('data-product-id');
 
-    // 수량 감소 버튼 클릭 시
-//    decreaseBtn.addEventListener('click', function() {
-//        let quantity = parseInt(quantityInput.value);
-//        if (quantity > 1) {
-//            quantityInput.value = quantity - 1;
-//        }
-//    });
+      if (!productId) {
+        console.error("Product ID가 존재하지 않습니다.");
+        return;
+      }
 
-    // 수량 증가 버튼 클릭 시
-//    increaseBtn.addEventListener('click', function() {
-//        let quantity = parseInt(quantityInput.value);
-//        quantityInput.value = quantity + 1;
-//    });
+      // 해당 상품의 수량 input 찾기
+      const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+      if (!input) {
+        console.error("수량 입력 요소를 찾을 수 없습니다.");
+        return;
+      }
 
-    // 수량의 변화와 전체가격 변동하는 코드
-    document.querySelectorAll('.increase-btn, .decrease-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const productId = this.getAttribute('data-product-id');
-        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
-        let quantity = parseInt(input.value);
+      let quantity = parseInt(input.value);
 
-        if (this.classList.contains('increase-btn')) {
-          quantity++;
-        } else if (this.classList.contains('decrease-btn') && quantity > 1) {
-          quantity--;
-        }
+      // 수량 변경
+      if (this.classList.contains('increase-btn')) {
+        quantity++;
+      } else if (this.classList.contains('decrease-btn') && quantity > 1) {
+        quantity--;
+      }
 
-        input.value = quantity;
+      // 수량 반영
+      input.value = quantity;
 
-        fetch('/cart/update', {
+      // 서버에 업데이트 요청
+      fetch('/cart/update', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+              'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            productId: productId,
-            quantity: quantity
+              productId: productId,
+              quantity: quantity
           })
-        })
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById(`price-${productId}`).textContent = data.itemTotalPrice + '원';
-          document.getElementById("cart-total-price").textContent = data.cartTotalPrice + '원';
-        })
-        .catch(err => console.error("AJAX 오류:", err));
+      })
+      .then(res => res.json())
+      .then(data => {
+          // 서버에서 응답이 왔을 때
+          if (data.success) {
+              // 개별 상품 금액 갱신
+              const priceElement = document.getElementById(`price-${productId}`);
+              if (priceElement) {
+                  priceElement.textContent = data.itemTotalPrice.toLocaleString() + '원';
+              }
+
+              // 총 결제 금액 갱신
+              const totalPriceElement = document.getElementById("cart-total-price");
+              if (totalPriceElement) {
+                  totalPriceElement.textContent = data.cartTotalPrice.toLocaleString() + '원';
+              }
+          } else {
+              console.error('상품 수량 업데이트에 실패했습니다.');
+          }
+      })
+      .catch(err => {
+          console.error("AJAX 오류:", err);
+          alert("서버와의 통신에 문제가 발생했습니다. 다시 시도해주세요.");
       });
     });
+  });
 });
-
-
-
-
