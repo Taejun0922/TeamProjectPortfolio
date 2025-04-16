@@ -49,7 +49,9 @@
               <div class="d-flex align-items-center">
                 <img th:src="|/CampingMarket/images/IMG_${item.product.productId}.jpg|" class="cart-img me-3">
                 <div>
-                  <p class="fw-bold mb-1" th:text="${item.product.productName}"></p>
+                  <a th:href="@{/product/{id}(id=${item.product.productId})}" class="text-decoration-none text-dark">
+                    <p class="fw-bold mb-1" th:text="${item.product.productName}"></p>
+                  </a>
                 </div>
               </div>
             </td>

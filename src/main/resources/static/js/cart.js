@@ -1,10 +1,31 @@
 document.addEventListener("DOMContentLoaded", function() {
+  // 페이지 로드 시 금액 포매팅 함수
+  function formatPrice() {
+    // 상품 금액 포매팅
+    const priceElements = document.querySelectorAll('.product-total');
+    priceElements.forEach(priceElement => {
+      let price = parseInt(priceElement.textContent.replace(/[^0-9]/g, '')); // '원' 제거하고 숫자만 추출
+      if (!isNaN(price)) {
+        priceElement.textContent = price.toLocaleString() + '원'; // 천 단위 구분 기호 추가하고 원 붙이기
+      }
+    });
+
+    // 총 결제 금액 포매팅
+    const totalPriceElement = document.getElementById("cart-total-price");
+    if (totalPriceElement) {
+      let totalPrice = parseInt(totalPriceElement.textContent.replace(/[^0-9]/g, '')); // '원' 제거하고 숫자만 추출
+      if (!isNaN(totalPrice)) {
+        totalPriceElement.textContent = totalPrice.toLocaleString() + '원'; // 천 단위 구분 기호 추가하고 원 붙이기
+      }
+    }
+  }
+
+  // 페이지 로드시 금액 포매팅 실행
+  formatPrice();
+
   // 수량 변경 버튼을 찾고 클릭 시 동작을 설정
   document.querySelectorAll('.increase-btn, .decrease-btn').forEach(btn => {
     btn.addEventListener('click', function () {
-      // 버튼 클릭 시 alert창 띄우기
-      alert('수량 변경 버튼이 클릭되었습니다!');
-
       const productId = this.getAttribute('data-product-id');
 
       if (!productId) {
@@ -32,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
       input.value = quantity;
 
       // 서버에 업데이트 요청
-      fetch('/cart/update', {
+      fetch('/CampingMarket/cart/update', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
@@ -57,6 +78,9 @@ document.addEventListener("DOMContentLoaded", function() {
               if (totalPriceElement) {
                   totalPriceElement.textContent = data.cartTotalPrice.toLocaleString() + '원';
               }
+
+              // 금액 포매팅
+              formatPrice();
           } else {
               console.error('상품 수량 업데이트에 실패했습니다.');
           }
