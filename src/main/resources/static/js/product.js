@@ -13,13 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let isDetailOpen = false;
 
     // 초기 높이 설정 (원본 크기 유지하면서 일부만 보이게)
-    let initialHeight = 500;  // 처음 보이는 높이
-    let maxHeight = detailImage.naturalHeight || 1500;  // 실제 원본 이미지 크기
+    let initialHeight = 500;
+    let maxHeight = detailImage.naturalHeight || 1500;
     detailView.style.height = initialHeight + "px";
     detailView.style.overflow = "hidden";
 
-
-    // 상세정보 보기/닫기 버튼 클릭 이벤트 (부드럽게 아래로 확장)
     toggleDetailButton.addEventListener("click", () => {
         if (!isDetailOpen) {
             let expandInterval = setInterval(() => {
@@ -44,25 +42,49 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // 👉 총 가격 업데이트 함수
+    function updateTotalPrice() {
+        let quantityInput = document.querySelector("#quantityInput");
+        let quantity = parseInt(quantityInput.value);
+        let unitPrice = parseInt(document.querySelector("#unitPrice").value);
+
+        // 빈 값 또는 음수, NaN 방지
+        if (isNaN(quantity) || quantity < 1) {
+            quantity = 0;
+        }
+
+        let totalPrice = quantity * unitPrice;
+
+        document.querySelector("#totalPrice").textContent = totalPrice.toLocaleString();
+    }
+
+
     function decreaseValue() {
         let input = document.querySelector("#quantityInput");
         let value = parseInt(input.value);
-        if (value > 1) input.value = value - 1;
+        if (value > 1) {
+            input.value = value - 1;
+            updateTotalPrice();
+        }
     }
 
     function increaseValue() {
         let input = document.querySelector("#quantityInput");
         input.value = parseInt(input.value) + 1;
+        updateTotalPrice();
     }
 
     window.decreaseValue = decreaseValue;
     window.increaseValue = increaseValue;
 
-    /*document.querySelector(".btn-outline-secondary:first-of-type").addEventListener("click", decreaseValue);
-    document.querySelector(".btn-outline-secondary:last-of-type").addEventListener("click", increaseValue);*/
+    // 수동으로 수량을 입력했을 때도 가격 업데이트
+    document.querySelector("#quantityInput").addEventListener("input", updateTotalPrice);
 
     document.querySelector("#cartForm").addEventListener("submit", (event) => {
         let quantity = document.querySelector("#quantityInput").value;
         console.log("장바구니 추가, 상품 수량:", quantity);
     });
+
+    // 페이지 로드 시 초기 총 가격 설정
+    updateTotalPrice();
 });

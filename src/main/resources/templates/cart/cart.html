@@ -64,10 +64,15 @@
             </td>
             <td class="text-center fw-bold text-danger product-total" th:id="|price-${item.product.productId}|" th:text="${item.product.productPrice * item.quantity}"></td>
             <td class="text-center">
-              <form th:action="@{|/cart/${item.product.productId}|}" method="post">
-                <input type="hidden" name="_method" value="delete" />
-                <button class="btn btn-outline-danger btn-sm">🗑 삭제</button>
-              </form>
+              <div class="d-grid gap-2">
+                <form th:action="@{|/cart/${item.product.productId}|}" method="post">
+                  <button class="btn btn-outline-success btn-sm">💳 주문하기</button>
+                </form>
+                <form th:action="@{|/cart/${item.product.productId}|}" method="post">
+                  <input type="hidden" name="_method" value="delete" />
+                  <button class="btn btn-outline-danger btn-sm">🗑 삭제</button>
+                </form>
+              </div>
             </td>
           </tr>
           </tbody>
