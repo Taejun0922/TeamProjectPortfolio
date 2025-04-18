@@ -9,9 +9,7 @@ import org.sbproject03.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,27 +17,38 @@ import java.util.List;
 @Controller
 @RequestMapping("/order")
 public class OrderController {
+
   @Autowired
   private ProductOrderService orderService;
+
   @Autowired
   private MemberService memberService;
+
   @Autowired
   private HttpSession session;
+
   @Autowired
   private CartItemService cartItemService;
+
   @Autowired
   private ProductService productService;
 
+  // 주문 페이지 출력
   @GetMapping
   public String showOrders(Model model) {
     Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login";
+    }
+
     model.addAttribute("member", member);
 
+    // 장바구니 아이템 조회
     List<CartItems> cartItems = cartItemService.getCartItems(member.getCartId());
     List<ProductInfo> productInfoList = new ArrayList<>();
 
     for (CartItems item : cartItems) {
-      Product product = item.getProduct(); // 🔥 이미 연관된 Product 객체
+      Product product = item.getProduct();
       ProductInfo productInfo = new ProductInfo();
       productInfo.setProductId(product.getProductId());
       productInfo.setProductName(product.getProductName());
@@ -52,14 +61,52 @@ public class OrderController {
     return "order/orderCustomerInfo";
   }
 
-
+  // 전체 주문 처리
   @PostMapping
   public String orderPro() {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login";
+    }
+
     ProductOrder productOrder = new ProductOrder();
-    Member member = (Member) session.getAttribute(("userLoginInfo"));
+    productOrder.setMember(member);
     productOrder.setCartId(member.getCartId());
     orderService.save(productOrder);
+
+    // 장바구니 비우기
     memberService.deleteCartId(member.getMemberId());
-    return "main";
+
+    return "redirect:/main";
+  }
+
+  // 단일 상품 주문 처리
+  @PostMapping("/{productId}")
+  public String orderSingleProduct(@PathVariable String productId) {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login";
+    }
+
+    String cartId = member.getCartId();
+    CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
+
+    if (item == null) {
+      return "redirect:/cart";
+    }
+
+    // 주문 생성
+    ProductOrder order = new ProductOrder();
+    order.setMember(member);
+    order.setProduct(item.getProduct());
+    order.setQuantity(item.getQuantity());
+    order.setTotalPrice(item.getProduct().getProductPrice() * item.getQuantity());
+
+    orderService.save(order);
+
+    // 주문 후 장바구니에서 해당 상품 삭제
+    cartItemService.deleteByCartIdAndProductId(cartId, productId);
+
+    return "redirect:/order";
   }
 }

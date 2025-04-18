@@ -65,7 +65,7 @@
             <td class="text-center fw-bold text-danger product-total" th:id="|price-${item.product.productId}|" th:text="${item.product.productPrice * item.quantity}"></td>
             <td class="text-center">
               <div class="d-grid gap-2">
-                <form th:action="@{|/cart/${item.product.productId}|}" method="post">
+                <form th:action="@{|/order/${item.product.productId}|}" method="post">
                   <button class="btn btn-outline-success btn-sm">💳 주문하기</button>
                 </form>
                 <form th:action="@{|/cart/${item.product.productId}|}" method="post">
@@ -90,8 +90,15 @@
 
       <!-- 버튼 그룹 -->
       <div class="d-flex justify-content-center mt-4 gap-3 cart-btn">
+        <div class="btn-group" role="group" aria-label="Order group">
+          <button class="btn btn-outline-success" id="btn-selected-order">선택 주문하기</button>
+          <button th:onclick="|location.href='@{/order}'|" class="btn btn-success">전체 주문하기</button>
+        </div>
+        <div class="btn-group" role="group" aria-label="Delete group">
+          <button class="btn btn-outline-danger" id="btn-selected-delete">선택 삭제하기</button>
+          <button class="btn btn-danger" id="btn-all-delete">전체 삭제하기</button>
+        </div>
         <button th:onclick="|location.href='@{/main}'|" class="btn btn-outline-secondary">계속 쇼핑하기</button>
-        <button th:onclick="|location.href='@{/order}'|" class="btn btn-dark">전체 주문하기</button>
       </div>
     </div>
   </div>

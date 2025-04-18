@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString
+@ToString(exclude = "cart") // 순환 참조 방지
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,10 +24,14 @@ public class CartItems {
 
     private int quantity;
 
+    // ✅ Cart와 연관관계 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     public CartItems(String cartId, Product product, int quantity) {
         this.cartRefId = cartId;
         this.product = product;
         this.quantity = quantity;
     }
 }
-

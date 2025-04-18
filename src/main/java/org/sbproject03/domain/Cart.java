@@ -5,25 +5,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
-@ToString(exclude = "member")
+@ToString(exclude = {"member", "cartItems"}) // 순환 참조 방지
 @Entity
 public class Cart {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)  // auto-increment 방식으로 생성
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "cart_id")
-  private Long cartId;  // cartId를 Long 타입으로 변경
+  private Long cartId;
 
   private int totalPrice = 0;
 
-  @ManyToOne(fetch = FetchType.LAZY) // Cart 입장에선 여러 개가 하나의 Member에 속함
-  @JoinColumn(name = "member_id") // DB에서 member_id라는 FK 컬럼으로 연결
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id")
   private Member member;
 
-  // Cart 생성자
+  // ✅ CartItems와의 연관관계 추가
+  @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<CartItems> cartItems = new ArrayList<>();
+
+  // 생성자
   public Cart(Member member) {
-    this.member = member;  // Member를 받아서 Cart에 연결
+    this.member = member;
   }
 }
