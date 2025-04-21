@@ -30,7 +30,7 @@ public class CartItemService {
     // 장바구니에서 개별 상품을 삭제하는 메서드
     public void deleteCartItem(String productId, String cartRefId) {
         Product product = productService.getProductById(productId); // 상품 정보 가져오기
-        CartItems item = cartItemRepository.findByProductAndCartRefId(product, cartRefId);
+        CartItems item = cartItemRepository.findByCartRefIdAndProduct_ProductId(productId, cartRefId);
         if (item != null) {
             cartItemRepository.delete(item); // 장바구니에서 해당 아이템 삭제
         }
@@ -39,13 +39,13 @@ public class CartItemService {
     // 장바구니에서 특정 상품을 찾는 메서드
     public CartItems findByCartIdAndProductId(String cartRefId, String productId) {
         Product product = productService.getProductById(productId);
-        return cartItemRepository.findByCartRefIdAndProduct(cartRefId, product);
+        return cartItemRepository.findByCartRefIdAndProduct_ProductId(cartRefId, productId);
     }
 
     // 개별 상품 주문 후 장바구니에서 해당 아이템을 삭제하는 메서드
     public void deleteByCartIdAndProductId(String cartRefId, String productId) {
         Product product = productService.getProductById(productId);
-        CartItems cartItem = cartItemRepository.findByCartRefIdAndProduct(cartRefId, product);
+        CartItems cartItem = cartItemRepository.findByCartRefIdAndProduct_ProductId(cartRefId, productId);
         if (cartItem != null) {
             cartItemRepository.delete(cartItem); // 장바구니에서 해당 상품 삭제
         }

@@ -89,10 +89,17 @@ public class OrderController {
     }
 
     String cartId = member.getCartId();
+    System.out.println("🛒 주문 시도 - cartId: " + cartId + ", productId: " + productId);
+
     CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
 
     if (item == null) {
+      System.out.println("❌ 해당 장바구니 항목을 찾을 수 없습니다.");
       return "redirect:/cart";
+    } else {
+      System.out.println("✅ 장바구니 항목 확인됨: "
+              + "상품명 = " + item.getProduct().getProductName()
+              + ", 수량 = " + item.getQuantity());
     }
 
     // 주문 생성
@@ -102,11 +109,15 @@ public class OrderController {
     order.setQuantity(item.getQuantity());
     order.setTotalPrice(item.getProduct().getProductPrice() * item.getQuantity());
 
+    System.out.println("💾 주문 저장 중...");
+
     orderService.save(order);
 
     // 주문 후 장바구니에서 해당 상품 삭제
     cartItemService.deleteByCartIdAndProductId(cartId, productId);
+    System.out.println("🧹 주문 후 장바구니에서 상품 삭제 완료");
 
-    return "redirect:/order";
+    return "order/orderCustomerInfo";
   }
+
 }
