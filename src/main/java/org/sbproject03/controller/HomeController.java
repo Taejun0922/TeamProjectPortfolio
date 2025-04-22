@@ -2,6 +2,7 @@ package org.sbproject03.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.sbproject03.domain.Cart;
 import org.sbproject03.domain.Member;
 import org.sbproject03.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +22,27 @@ public class HomeController {
 
     @GetMapping
     public String welcome(Model model, Authentication authentication, HttpServletRequest request, HttpSession session) {
-        System.out.println("🛠 HomeController 진입!");  // ✅ 메서드 실행 확인
+        // 로그 추가: HomeController 진입
+        System.out.println("🛠 HomeController 진입!");
 
         if (authentication == null || !authentication.isAuthenticated()) {
             System.out.println("❌ 인증되지 않은 사용자, main 페이지로 이동");
             return "/main";
         }
 
+        // 로그인한 사용자 정보 가져오기
         Object principal = authentication.getPrincipal();
-        System.out.println("🔍 Principal 객체: " + principal);
-
         if (!(principal instanceof User)) {
-            System.out.println("❌ Principal이 User 객체가 아님");
+            System.out.println("❗ 인증된 사용자 정보가 User 객체가 아닙니다.");
             return "redirect:/login";
         }
 
         User user = (User) principal;
         String userId = user.getUsername();
-        System.out.println("✅ 로그인한 사용자 ID: " + userId);
 
+        // 사용자 ID가 null인 경우 처리
         if (userId == null) {
-            System.out.println("❌ userId가 null, 로그인 페이지로 이동");
+            System.out.println("❗ 사용자 ID가 null입니다. 로그인 페이지로 리다이렉트");
             return "redirect:/login";
         }
 
@@ -49,17 +50,29 @@ public class HomeController {
         Member member = memberService.getMemberById(userId);
         System.out.println("✅ DB에서 가져온 회원 정보: " + member);
 
-        // ✅ 세션이 null인지 체크
-        if (session == null) {
-            System.out.println("❌ 세션이 null 입니다!");
-        } else {
+        if (session != null) {
+            // 세션에 사용자 정보 저장
             session.setAttribute("userLoginInfo", member);
             System.out.println("✅ 세션에 저장된 userLoginInfo: " + session.getAttribute("userLoginInfo"));
+
+            // 장바구니 정보 가져오기
+            Cart cart = memberService.getLatestCartByMember(member);
+            if (cart != null) {
+                // 장바구니 정보가 존재하면 세션에 cartId 저장
+                session.setAttribute("cartId", cart.getCartId());
+                System.out.println("🛒 세션에 저장된 cartId: " + cart.getCartId());
+            } else {
+                // 장바구니가 없을 경우 경고 메시지 출력
+                System.out.println("⚠️ 해당 회원의 Cart가 없습니다.");
+            }
         }
 
+        // 회원 정보 모델에 추가
         model.addAttribute("member", member);
-        System.out.println("✅ 모델에 추가된 member: " + member);
+
+        // 로그 추가: 리디렉션 전에 어떤 페이지로 가는지 확인
+        System.out.println("➡️ 메인 페이지로 리다이렉트: /main");
+
         return "redirect:/main";
     }
-
 }

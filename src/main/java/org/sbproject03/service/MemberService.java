@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.sbproject03.domain.Cart;
+import org.sbproject03.repository.CartRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService implements UserDetailsService {
 
   private final MemberRepository memberRepository;
+  private final CartRepository cartRepository;
 
   // 회원 추가
   public void register(Member member) {
@@ -26,9 +29,9 @@ public class MemberService implements UserDetailsService {
   // 회원 ID 중복 체크
   private void validateDuplicateMember(Member member) {
     memberRepository.findByMemberId(member.getMemberId())
-      .ifPresent(existingMember -> {
-        throw new IllegalStateException("이미 가입한 회원입니다.");
-      });
+            .ifPresent(existingMember -> {
+              throw new IllegalStateException("이미 가입한 회원입니다.");
+            });
   }
 
   // 회원 정보 획득(1건)
@@ -50,7 +53,7 @@ public class MemberService implements UserDetailsService {
     System.out.println("로그인 성공: " + member.getMemberId());
 
     return User.builder()
-            .username(member.getMemberId())  // 여기서 memberId가 정상적으로 들어가는지 확인!
+            .username(member.getMemberId())
             .password(member.getMemberPassword())
             .roles(member.getRole().toString())
             .build();
@@ -60,22 +63,18 @@ public class MemberService implements UserDetailsService {
   public void updateMember(Member member) {
     System.out.println("회원 정보 업데이트: " + member.getMemberId());
 
-    // 기존 회원 정보 확인
     Member existingMember = memberRepository.findByMemberId(member.getMemberId())
             .orElseThrow(() -> new IllegalStateException("회원을 찾을 수 없습니다: " + member.getMemberId()));
 
-    // 정보 업데이트
     existingMember.setMemberName(member.getMemberName());
     existingMember.setMemberEmail(member.getMemberEmail());
     existingMember.setMemberPhone(member.getMemberPhone());
     existingMember.setMemberAddress(member.getMemberAddress());
 
-    // 비밀번호가 변경된 경우만 업데이트
     if (member.getMemberPassword() != null && !member.getMemberPassword().isEmpty()) {
-      existingMember.setMemberPassword(member.getMemberPassword()); // 암호화된 비밀번호 사용
+      existingMember.setMemberPassword(member.getMemberPassword());
     }
 
-    // 저장 (JPA의 save() 메서드는 기존 데이터가 있으면 업데이트를 수행)
     memberRepository.save(existingMember);
   }
 
@@ -84,7 +83,6 @@ public class MemberService implements UserDetailsService {
     System.out.println("회원 삭제 요청: " + memberId);
     memberRepository.deleteByMemberId(memberId);
 
-    // 삭제 후 확인
     boolean exists = memberRepository.findByMemberId(memberId).isPresent();
     if (exists) {
       throw new IllegalStateException("회원 삭제 실패: " + memberId);
@@ -92,11 +90,11 @@ public class MemberService implements UserDetailsService {
     System.out.println("회원 삭제 성공: " + memberId);
   }
 
-  public void addCartId(String memberId, String cartId) {
-    memberRepository.addCartId(memberId, cartId);
+  // 🔥 가장 최신의 Cart를 가져오는 메서드
+  public Cart getLatestCartByMember(Member member) {
+    return cartRepository.findTopByMemberOrderByCartIdDesc(member)
+            .orElse(null);
   }
 
-  public void deleteCartId(String memberId) {
-    memberRepository.deleteCartId(memberId);
-  }
+  // ✅ addCartId(), deleteCartId() 완전히 제거됨!
 }

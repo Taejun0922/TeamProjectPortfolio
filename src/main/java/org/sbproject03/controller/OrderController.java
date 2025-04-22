@@ -43,8 +43,17 @@ public class OrderController {
 
     model.addAttribute("member", member);
 
-    // 장바구니 아이템 조회
-    List<CartItems> cartItems = cartItemService.getCartItems(member.getCartId());
+    // ✅ 세션에서 cartId 가져오기
+    Object cartIdObj = session.getAttribute("cartId");
+    System.out.println("🔍 [OrderController] 세션에서 가져온 cartId: " + cartIdObj);
+
+    if (cartIdObj == null) {
+      System.out.println("❗ cartId가 세션에 없음! -> /cart로 이동");
+      return "redirect:/cart";
+    }
+    String cartId = cartIdObj.toString();
+
+    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
     List<ProductInfo> productInfoList = new ArrayList<>();
 
     for (CartItems item : cartItems) {
@@ -69,13 +78,19 @@ public class OrderController {
       return "redirect:/login";
     }
 
+    Object cartIdObj = session.getAttribute("cartId");
+    if (cartIdObj == null) {
+      return "redirect:/cart";
+    }
+    String cartId = cartIdObj.toString();
+
     ProductOrder productOrder = new ProductOrder();
     productOrder.setMember(member);
-    productOrder.setCartId(member.getCartId());
+    productOrder.setCartId(cartId);
     orderService.save(productOrder);
 
-    // 장바구니 비우기
-    memberService.deleteCartId(member.getMemberId());
+    // 세션에서 cartId 제거
+    session.removeAttribute("cartId");
 
     return "redirect:/main";
   }
@@ -88,36 +103,33 @@ public class OrderController {
       return "redirect:/login";
     }
 
-    String cartId = member.getCartId();
+    Object cartIdObj = session.getAttribute("cartId");
+    if (cartIdObj == null) {
+      return "redirect:/cart";
+    }
+    String cartId = cartIdObj.toString();
+
     System.out.println("🛒 주문 시도 - cartId: " + cartId + ", productId: " + productId);
 
     CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
-
     if (item == null) {
       System.out.println("❌ 해당 장바구니 항목을 찾을 수 없습니다.");
       return "redirect:/cart";
-    } else {
-      System.out.println("✅ 장바구니 항목 확인됨: "
-              + "상품명 = " + item.getProduct().getProductName()
-              + ", 수량 = " + item.getQuantity());
     }
 
-    // 주문 생성
+    System.out.println("✅ 장바구니 항목 확인됨: 상품명 = " + item.getProduct().getProductName() + ", 수량 = " + item.getQuantity());
+
     ProductOrder order = new ProductOrder();
     order.setMember(member);
     order.setProduct(item.getProduct());
     order.setQuantity(item.getQuantity());
     order.setTotalPrice(item.getProduct().getProductPrice() * item.getQuantity());
 
-    System.out.println("💾 주문 저장 중...");
-
     orderService.save(order);
 
-    // 주문 후 장바구니에서 해당 상품 삭제
     cartItemService.deleteByCartIdAndProductId(cartId, productId);
     System.out.println("🧹 주문 후 장바구니에서 상품 삭제 완료");
 
     return "order/orderCustomerInfo";
   }
-
 }

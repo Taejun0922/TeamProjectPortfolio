@@ -14,7 +14,9 @@ import java.util.List;
 @ToString(exclude = "carts")
 @Entity
 public class Member {
-  @Id @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   @NotBlank
@@ -42,19 +44,17 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  private String cartId;
+  // ✅ cartId 필드 삭제 완료!
 
-  // OneToMany 관계 추가
+  // 회원과 Cart는 1:N 관계 (회원 1명 = 여러 카트 가능)
   @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<Cart> carts;  // 한 회원은 여러 카트를 가질 수 있음
+  private List<Cart> carts;
 
   // 회원 생성 메서드
   public static Member createMember(Member member, PasswordEncoder passwordEncoder) {
     Member m = member;
-    // 비밀번호 암호화, 사용자 역할 일반으로 설정
     m.setMemberPassword(passwordEncoder.encode(member.getMemberPassword()));
     m.setRole(Role.USER);
     return m;
   }
-
 }
