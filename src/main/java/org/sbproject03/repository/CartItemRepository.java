@@ -1,5 +1,6 @@
 package org.sbproject03.repository;
 
+import org.sbproject03.domain.Cart;
 import org.sbproject03.domain.CartItems;
 import org.sbproject03.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,19 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface CartItemRepository extends JpaRepository<CartItems, String> {
+public interface CartItemRepository extends JpaRepository<CartItems, Long> {  // CartItems 엔티티의 ID 타입이 Long으로 변경
 
-    // cartRefId로 장바구니 아이템 리스트를 가져오는 메서드
-    List<CartItems> findAllByCartRefId(String cartRefId);
+    // cartId로 장바구니 아이템 리스트를 가져오는 메서드
+    List<CartItems> findAllByCart_CartId(Long cartId);  // cartId를 Long으로 수정
 
-    // cartRefId와 상품(productId)로 장바구니 아이템을 찾는 메서드
-    CartItems findByCartRefIdAndProduct_ProductId(String cartRefId, String productId);
+    // cartId와 상품(productId)로 장바구니 아이템을 찾는 메서드
+    CartItems findByCart_CartIdAndProduct_ProductId(Long cartId, String productId);  // cartId를 Long으로 수정
 
-    // 특정 상품과 cartRefId로 장바구니에서 아이템 삭제
+    // 특정 상품과 cartId로 장바구니에서 아이템 삭제
     @Transactional
-    void deleteByProductAndCartRefId(Product product, String cartRefId);
+    void deleteByProductAndCart_CartId(Product product, Long cartId);  // cartId를 Long으로 수정
 
-    // cartRefId와 상품으로 장바구니 아이템 삭제하는 메서드
+    // cartId와 상품으로 장바구니 아이템 삭제하는 메서드
     @Transactional
-    void deleteByCartRefIdAndProduct_ProductId(String cartRefId, String productId);
+    void deleteByCart_CartIdAndProduct_ProductId(Long cartId, String productId);  // cartId를 Long으로 수정
 }

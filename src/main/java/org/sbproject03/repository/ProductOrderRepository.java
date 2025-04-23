@@ -19,4 +19,7 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
 
     // 특정 회원이 주문한 특정 주문 상태의 주문을 조회하는 메서드
     List<ProductOrder> findAllByMemberAndStatus(Member member, OrderStatus status);
+
+    // 특정 cartId로 주문을 조회하는 메서드
+    List<ProductOrder> findAllByCartId(Long cartId);
 }

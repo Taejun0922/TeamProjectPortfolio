@@ -25,9 +25,11 @@ public class HomeController {
         // 로그 추가: HomeController 진입
         System.out.println("🛠 HomeController 진입!");
 
-        if (authentication == null || !authentication.isAuthenticated()) {
+        // 인증되지 않은 사용자 처리
+        if (authentication == null || !authentication.isAuthenticated() ||
+                authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
             System.out.println("❌ 인증되지 않은 사용자, main 페이지로 이동");
-            return "/main";
+            return "/main"; // 인증되지 않은 사용자는 main 페이지로 리디렉션
         }
 
         // 로그인한 사용자 정보 가져오기
@@ -48,23 +50,25 @@ public class HomeController {
 
         // DB에서 사용자 정보 가져오기
         Member member = memberService.getMemberById(userId);
+        if (member == null) {
+            System.out.println("❌ DB에서 해당 사용자 정보를 찾을 수 없습니다.");
+            return "redirect:/login";
+        }
         System.out.println("✅ DB에서 가져온 회원 정보: " + member);
 
-        if (session != null) {
-            // 세션에 사용자 정보 저장
-            session.setAttribute("userLoginInfo", member);
-            System.out.println("✅ 세션에 저장된 userLoginInfo: " + session.getAttribute("userLoginInfo"));
+        // 세션에 사용자 정보 저장
+        session.setAttribute("userLoginInfo", member);
+        System.out.println("✅ 세션에 저장된 userLoginInfo: " + session.getAttribute("userLoginInfo"));
 
-            // 장바구니 정보 가져오기
-            Cart cart = memberService.getLatestCartByMember(member);
-            if (cart != null) {
-                // 장바구니 정보가 존재하면 세션에 cartId 저장
-                session.setAttribute("cartId", cart.getCartId());
-                System.out.println("🛒 세션에 저장된 cartId: " + cart.getCartId());
-            } else {
-                // 장바구니가 없을 경우 경고 메시지 출력
-                System.out.println("⚠️ 해당 회원의 Cart가 없습니다.");
-            }
+        // 장바구니 정보 가져오기
+        Cart cart = memberService.getLatestCartByMember(member);
+        if (cart != null) {
+            // 장바구니 정보가 존재하면 세션에 cartId 저장
+            session.setAttribute("cartId", cart.getCartId());
+            System.out.println("🛒 세션에 저장된 cartId: " + cart.getCartId());
+        } else {
+            // 장바구니가 없을 경우 경고 메시지 출력
+            System.out.println("⚠️ 해당 회원의 Cart가 없습니다.");
         }
 
         // 회원 정보 모델에 추가
@@ -73,6 +77,6 @@ public class HomeController {
         // 로그 추가: 리디렉션 전에 어떤 페이지로 가는지 확인
         System.out.println("➡️ 메인 페이지로 리다이렉트: /main");
 
-        return "redirect:/main";
+        return "redirect:/main"; // 메인 페이지로 리디렉션
     }
 }

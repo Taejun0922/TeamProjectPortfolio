@@ -13,6 +13,7 @@ import java.util.List;
 
 @Service
 public class NoticeService {
+
     @Autowired
     private NoticeRepository noticeRepository;
 
@@ -26,12 +27,13 @@ public class NoticeService {
 
     // 글 저장
     public void save(Notice notice) {
-       noticeRepository.save(notice.toEntity());
+        // toEntity() 메소드 제거하고 바로 Notice 객체를 저장
+        noticeRepository.save(notice);
     }
 
     // newNotice 1건 읽기
     public Notice getNoticeById(Long id) {
-        return noticeRepository.findById(id).get();
+        return noticeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Notice not found with id " + id));
     }
 
     // 게시글 삭제
@@ -43,5 +45,4 @@ public class NoticeService {
     public List<Notice> getRecentNotices() {
         return noticeRepository.findTop4ByOrderByCreatedDateDesc();
     }
-
 }

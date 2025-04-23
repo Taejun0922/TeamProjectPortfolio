@@ -1,6 +1,5 @@
 package org.sbproject03.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.sbproject03.domain.Cart;
 import org.sbproject03.domain.CartItems;
@@ -17,9 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/cart")
@@ -32,15 +29,13 @@ public class CartController {
   @Autowired
   private CartItemService cartItemService;
   @Autowired
-  private HttpServletRequest request;
-  @Autowired
   private HttpSession session;
 
   // 장바구니 화면 이동
   @GetMapping
-  public ModelAndView requestCartId(HttpServletRequest request, ModelAndView mav) {
+  public ModelAndView requestCartId(ModelAndView mav) {
     Cart cart = getCart(); // 카트 조회 메서드
-    String cartId = cart.getCartId().toString(); // cartId는 이제 Long 타입이 아니라 자동 생성됨
+    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
     List<CartItems> cartItems = cartItemService.getCartItems(cartId); // 장바구니 항목 조회
 
     // 로그 출력
@@ -60,12 +55,12 @@ public class CartController {
   @PostMapping
   public String addCartItem(@RequestParam("productId") String productId, @RequestParam("quantity") int quantity) {
     Cart cart = getCart();
-    String cartId = cart.getCartId().toString();
+    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
 
     Product product = productService.getProductById(productId);
+    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
 
     boolean found = false;
-    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
     for (CartItems cartItem : cartItems) {
       if (cartItem.getProduct().getProductId().equals(productId)) {
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
@@ -74,9 +69,10 @@ public class CartController {
         break;
       }
     }
+
     // 장바구니가 없을 때
     if (!found) {
-      CartItems cartItem = new CartItems(cartId, product, quantity);
+      CartItems cartItem = new CartItems(cart, product, quantity);
       cartItems.add(cartItem);
       cartItemService.save(cartItem);
     }
@@ -85,11 +81,11 @@ public class CartController {
     return "redirect:/cart";
   }
 
-
+  // 장바구니 상품 삭제
   @DeleteMapping("/{productId}")
   public String deleteCartItem(@PathVariable String productId) {
     Cart cart = getCart();
-    String cartId = cart.getCartId().toString();
+    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
     cartItemService.deleteCartItem(productId, cartId);
 
     updateTotalPrice(cartId);
@@ -108,10 +104,9 @@ public class CartController {
 
     // 카트가 없으면 새로 생성
     if (carts.isEmpty()) {
-      Cart cart = new Cart();
-      cart.setMember(member); // 이 카트는 해당 회원에 속함
-      cart.setTotalPrice(0); // 초기 총 가격 0
-      cartService.save(cart);
+      // Cart를 생성할 때는 이제 Cart.createCart(member)로 생성해야 합니다.
+      Cart cart = cartService.createCart(member);
+      cartService.save(cart); // 생성된 카트를 저장합니다.
       return cart;
     }
 
@@ -120,8 +115,8 @@ public class CartController {
   }
 
   // 카트 상품가격 업데이트 메서드 (매핑 X, 호출용)
-  public void updateTotalPrice(String cartId) {
-    Cart cart = cartService.read(Long.parseLong(cartId));
+  public void updateTotalPrice(Long cartId) { // cartId를 Long 타입으로 수정
+    Cart cart = cartService.read(cartId); // cartId는 Long 타입으로 수정
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
 
     int totalPrice = 0;
@@ -134,13 +129,12 @@ public class CartController {
     cartService.save(cart);
   }
 
-
   // 수량 변화시 카트의 전체 가격업데이트
   @PostMapping("/update")
   @ResponseBody
   public CartResponse updateCartItemQuantity(@RequestBody UpdateCartRequest request) {
     Cart cart = getCart();
-    String cartId = cart.getCartId().toString();
+    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
 
     CartItems targetItem = null;
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
@@ -163,9 +157,8 @@ public class CartController {
     }
 
     // 응답 객체 생성
-    CartResponse response = new CartResponse(true, itemTotalPrice, cartService.read(Long.parseLong(cartId)).getTotalPrice());
+    CartResponse response = new CartResponse(true, itemTotalPrice, cartService.read(cartId).getTotalPrice());
 
     return response;
   }
-
 }

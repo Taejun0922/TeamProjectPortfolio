@@ -27,8 +27,8 @@ public class ProductOrderService {
     productOrderRepository.save(productOrder);
   }
 
-  // 개별 상품 주문 처리
-  public void orderSingleProduct(String cartId, String productId) {
+  // 개별 상품 주문 처리 (cartId는 Long, productId는 String)
+  public void orderSingleProduct(Long cartId, String productId) {
     // 장바구니에서 상품 가져오기
     CartItems cartItem = cartItemService.findByCartIdAndProductId(cartId, productId);
     if (cartItem == null) {
@@ -44,7 +44,7 @@ public class ProductOrderService {
     productOrder.setTotalPrice(product.getProductPrice() * cartItem.getQuantity());
     productOrder.setMember(cartItem.getCart().getMember()); // Member 설정
 
-    save(productOrder);
+    save(productOrder); // 주문 저장
 
     // 장바구니에서 해당 상품 제거
     cartItemService.deleteByCartIdAndProductId(cartId, productId);

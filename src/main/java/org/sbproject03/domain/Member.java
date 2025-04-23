@@ -1,6 +1,7 @@
 package org.sbproject03.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -9,52 +10,50 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+@Entity
 @Data
 @NoArgsConstructor
 @ToString(exclude = "carts")
-@Entity
 public class Member {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Id @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   @NotBlank
-  @Column(unique = true, columnDefinition = "varchar(30)")
+  @Column(unique = true, length = 30)
   private String memberId;
 
   @NotBlank
   private String memberPassword;
 
-  @NotBlank
-  @Column(columnDefinition = "varchar(16)")
+  @NotBlank @Column(length = 16)
   private String memberName;
 
-  @NotBlank
-  @Column(columnDefinition = "varchar(13)")
+  @NotBlank @Column(length = 13)
   private String memberPhone;
 
-  @NotBlank
-  @Column(columnDefinition = "varchar(50)")
+  @NotBlank @Column(length = 50)
   private String memberEmail;
 
   @NotBlank
   private String memberAddress;
 
+  @NotNull
   @Enumerated(EnumType.STRING)
-  private Role role;
+  private Role role = Role.USER;
 
-  // ✅ cartId 필드 삭제 완료!
-
-  // 회원과 Cart는 1:N 관계 (회원 1명 = 여러 카트 가능)
   @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Cart> carts;
 
-  // 회원 생성 메서드
   public static Member createMember(Member member, PasswordEncoder passwordEncoder) {
-    Member m = member;
+    Member m = new Member();
+    m.setMemberId(member.getMemberId());
     m.setMemberPassword(passwordEncoder.encode(member.getMemberPassword()));
-    m.setRole(Role.USER);
+    m.setMemberName(member.getMemberName());
+    m.setMemberPhone(member.getMemberPhone());
+    m.setMemberEmail(member.getMemberEmail());
+    m.setMemberAddress(member.getMemberAddress());
     return m;
   }
 }
+

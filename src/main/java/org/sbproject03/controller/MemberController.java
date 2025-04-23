@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,25 +31,39 @@ public class MemberController {
 
   @GetMapping
   public String myPage(Model model) {
-    model.addAttribute("member", new Member());
+    // 로그인한 사용자의 정보를 가져와서 보여주는 로직
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      String userId = authentication.getName();
+      Member member = memberService.getMemberById(userId);
+      model.addAttribute("member", member);
+    }
     return "member/myPage";
   }
 
-  // 회원가입 후 자동 로그인 가능하도록 수정
+  // 회원가입 후 자동 로그인 기능 제거 및 세션 저장
   @PostMapping("/register")
   public String register(@Valid @ModelAttribute Member member, BindingResult bindingResult,
-                         RedirectAttributes redirectAttributes, HttpSession session) {
+                         RedirectAttributes redirectAttributes, HttpServletRequest request) {
     if (bindingResult.hasErrors()) {
       redirectAttributes.addFlashAttribute("alertMessage", "모든 항목을 입력해주세요.");
       return "redirect:/main";
     }
+
     try {
       // 비밀번호 암호화 후 회원 저장
       Member newMember = Member.createMember(member, passwordEncoder);
       memberService.register(newMember);
 
-      // 회원가입 후 자동 로그인 (세션 저장)
-      session.setAttribute("userLoginInfo", newMember);
+      // 로그인 처리: 인증 객체를 생성하여 SecurityContext에 설정
+      Authentication authentication = new UsernamePasswordAuthenticationToken(
+              newMember.getMemberName(), newMember.getMemberPassword());
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+
+      // 세션에 로그인 정보 저장 (명시적으로 userLoginInfo 세션에 저장)
+      HttpSession session = request.getSession();
+      session.setAttribute("userLoginInfo", newMember); // 세션에 사용자 정보 저장
+
       System.out.println("회원가입 성공: 세션에 사용자 정보 저장 -> " + newMember);
 
       redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다!");
@@ -55,22 +71,18 @@ public class MemberController {
       redirectAttributes.addFlashAttribute("alertMessage", e.getMessage());
       return "redirect:/main";
     }
+
     return "redirect:/main";
   }
 
-  // 회원정보 수정 후 세션 업데이트 추가
+  // 회원정보 수정 후 세션 업데이트
   @PostMapping("/edit")
-  public String updateMember(@ModelAttribute Member member, RedirectAttributes redirectAttributes, HttpSession session) {
-    System.out.println("🛠 회원정보 수정 요청: " + member);
-
-    // 현재 로그인한 사용자 정보 가져오기
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof org.springframework.security.core.userdetails.User user) {
-      String userId = user.getUsername();
-      System.out.println("현재 로그인한 사용자 ID: " + userId);
-
-      // 기존 회원 정보 불러오기
+  public String updateMember(@ModelAttribute Member member, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      String userId = authentication.getName();
       Member existingMember = memberService.getMemberById(userId);
+
       if (existingMember != null) {
         // 수정된 정보 적용
         existingMember.setMemberName(member.getMemberName());
@@ -87,7 +99,8 @@ public class MemberController {
         memberService.updateMember(existingMember);
 
         // 세션 정보 업데이트
-        session.setAttribute("userLoginInfo", existingMember);
+        HttpSession session = request.getSession();
+        session.setAttribute("userLoginInfo", existingMember); // 세션 정보 업데이트
         System.out.println("세션 정보 업데이트 완료: " + existingMember);
 
         redirectAttributes.addFlashAttribute("successMessage", "회원정보가 수정되었습니다.");
@@ -96,6 +109,7 @@ public class MemberController {
       redirectAttributes.addFlashAttribute("alertMessage", "로그인이 필요합니다.");
       return "redirect:/main";
     }
+
     return "redirect:/main";
   }
 
@@ -103,40 +117,36 @@ public class MemberController {
   @PostMapping("/delete")
   public String deleteMember(HttpServletRequest request, HttpServletResponse response,
                              RedirectAttributes redirectAttributes) {
-    // 현재 로그인한 사용자 정보 확인
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated()) {
       redirectAttributes.addFlashAttribute("alertMessage", "로그인한 사용자가 없습니다.");
       return "redirect:/main"; // 로그인 정보 없으면 메인으로 이동
     }
 
-    // Spring Security에서 현재 로그인한 사용자 ID 가져오기
     String memberId = authentication.getName();
-    System.out.println("회원 탈퇴 요청: " + memberId);
-
     try {
       // 회원 삭제 수행
       memberService.deleteMember(memberId);
 
-      // 로그아웃 처리 (세션 삭제 + Spring Security 로그아웃)
+      // 로그아웃 처리 (Spring Security의 로그아웃 처리)
       new SecurityContextLogoutHandler().logout(request, response, authentication);
+
+      // 세션 삭제
       HttpSession session = request.getSession(false);
       if (session != null) {
         session.invalidate();
         System.out.println("세션 삭제 완료");
       }
 
-      // 성공 메시지 추가 후 메인 페이지로 이동
       redirectAttributes.addFlashAttribute("successMessage", "회원 탈퇴가 완료되었습니다.");
       return "redirect:/main";
     } catch (Exception e) {
-      System.out.println("회원 탈퇴 실패: " + e.getMessage());
       redirectAttributes.addFlashAttribute("alertMessage", "회원 탈퇴 중 오류가 발생했습니다.");
-      return "redirect:/myPage"; // 오류 발생 시 마이페이지로 이동 (?)
+      return "redirect:/myPage";
     }
   }
 
-  // 로그아웃 시 세션 직접 삭제 추가
+  // 로그아웃
   @GetMapping("/logout")
   public String logout(HttpServletRequest request, HttpServletResponse response) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -151,9 +161,8 @@ public class MemberController {
     if (session != null) {
       session.invalidate();
       System.out.println("로그아웃: 세션 삭제 완료");
-    } else {
-      System.out.println("로그아웃 시도: 이미 세션 없음");
     }
+
     return "redirect:/main";
   }
 
@@ -161,7 +170,6 @@ public class MemberController {
   public String orderPage(HttpSession session, Model model) {
     Member member = (Member) session.getAttribute("userLoginInfo");
     model.addAttribute("member", member);
-
     return "order/orderCustomerInfo";
   }
 }

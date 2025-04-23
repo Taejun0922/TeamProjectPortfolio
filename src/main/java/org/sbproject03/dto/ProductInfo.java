@@ -1,10 +1,10 @@
-package org.sbproject03.domain;
+package org.sbproject03.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@Data @ToString @NoArgsConstructor
+@Data
+@AllArgsConstructor
 public class ProductInfo {
   private String productId;
   private String productName;

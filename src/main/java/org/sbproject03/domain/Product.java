@@ -8,32 +8,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Data @NoArgsConstructor @ToString
 @Entity
+@Data
+@NoArgsConstructor
+@ToString
 public class Product {
-  @Id
-  @Column(columnDefinition = "varchar(30)")
+
+  @Id @Column(length = 30)
   private String productId;
 
-  @Column(columnDefinition = "varchar(50) not null")
+  @Column(length = 50, nullable = false)
   private String productName;
 
-  @NotNull @Min(value = 0) @Digits(integer = 9, fraction = 0)
+  @NotNull @Min(0) @Digits(integer = 9, fraction = 0)
   private int productPrice;
 
-  @NotNull @Min(value = 0)
+  @NotNull @Min(0)
   private int productStock;
 
-  @Column(columnDefinition = "text")
   @NotBlank
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String productDescription;
 
-  @Column(columnDefinition = "varchar(15)")
   @NotBlank
+  @Column(length = 15, nullable = false)
   private String productCategory;
 
-  /* 메인 상단 베스트 상품 */
-  @Column(columnDefinition = "boolean default false")
+  @Column(nullable = false)
   private boolean isBestItem = false;
-
 }
+

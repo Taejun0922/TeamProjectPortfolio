@@ -2,6 +2,7 @@ package org.sbproject03.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.sbproject03.domain.*;
+import org.sbproject03.dto.ProductInfo;
 import org.sbproject03.service.CartItemService;
 import org.sbproject03.service.MemberService;
 import org.sbproject03.service.ProductOrderService;
@@ -43,26 +44,28 @@ public class OrderController {
 
     model.addAttribute("member", member);
 
-    // ✅ 세션에서 cartId 가져오기
+    // ✅ 세션에서 cartId 가져오기 (Long 타입으로 변경)
     Object cartIdObj = session.getAttribute("cartId");
-    System.out.println("🔍 [OrderController] 세션에서 가져온 cartId: " + cartIdObj);
-
     if (cartIdObj == null) {
-      System.out.println("❗ cartId가 세션에 없음! -> /cart로 이동");
       return "redirect:/cart";
     }
-    String cartId = cartIdObj.toString();
+
+    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
 
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
     List<ProductInfo> productInfoList = new ArrayList<>();
 
     for (CartItems item : cartItems) {
       Product product = item.getProduct();
-      ProductInfo productInfo = new ProductInfo();
-      productInfo.setProductId(product.getProductId());
-      productInfo.setProductName(product.getProductName());
-      productInfo.setProductPrice(product.getProductPrice());
-      productInfo.setQuantity(item.getQuantity());
+
+      // ProductInfo 객체 생성 시 필요한 인자들 전달
+      ProductInfo productInfo = new ProductInfo(
+          product.getProductId(),  // productId
+          product.getProductName(), // productName
+          product.getProductPrice(), // productPrice
+          item.getQuantity()        // quantity
+      );
+
       productInfoList.add(productInfo);
     }
 
@@ -82,7 +85,7 @@ public class OrderController {
     if (cartIdObj == null) {
       return "redirect:/cart";
     }
-    String cartId = cartIdObj.toString();
+    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
 
     ProductOrder productOrder = new ProductOrder();
     productOrder.setMember(member);
@@ -107,17 +110,12 @@ public class OrderController {
     if (cartIdObj == null) {
       return "redirect:/cart";
     }
-    String cartId = cartIdObj.toString();
-
-    System.out.println("🛒 주문 시도 - cartId: " + cartId + ", productId: " + productId);
+    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
 
     CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
     if (item == null) {
-      System.out.println("❌ 해당 장바구니 항목을 찾을 수 없습니다.");
       return "redirect:/cart";
     }
-
-    System.out.println("✅ 장바구니 항목 확인됨: 상품명 = " + item.getProduct().getProductName() + ", 수량 = " + item.getQuantity());
 
     ProductOrder order = new ProductOrder();
     order.setMember(member);
@@ -128,7 +126,6 @@ public class OrderController {
     orderService.save(order);
 
     cartItemService.deleteByCartIdAndProductId(cartId, productId);
-    System.out.println("🧹 주문 후 장바구니에서 상품 삭제 완료");
 
     return "order/orderCustomerInfo";
   }

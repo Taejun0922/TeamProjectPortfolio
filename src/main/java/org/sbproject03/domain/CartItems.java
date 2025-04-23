@@ -6,17 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Data
-@ToString(exclude = "cart") // 순환 참조 방지
 @Entity
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = "cart")
 public class CartItems {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private String cartRefId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -24,14 +22,18 @@ public class CartItems {
 
     private int quantity;
 
-    // ✅ Cart와 연관관계 추가
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    public CartItems(String cartId, Product product, int quantity) {
-        this.cartRefId = cartId;
+    public CartItems(Cart cart, Product product, int quantity) {
+        this.cart = cart;
         this.product = product;
         this.quantity = quantity;
     }
+
+    public int getSubtotal() {
+        return product.getProductPrice() * quantity;
+    }
 }
+

@@ -15,10 +15,13 @@ import java.time.LocalDateTime;
 
 // 공지사항 클래스
 // 아이디, 작성자 아이디, 제목, 내용, 작성일, 수정일
-@Data @ToString @NoArgsConstructor
 @Entity
+@Data
+@NoArgsConstructor
+@ToString
 @EntityListeners(AuditingEntityListener.class)
 public class Notice {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,15 +31,14 @@ public class Notice {
     @Column(length = 200, nullable = false)
     private String noticeSubject;
 
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String noticeContent;
 
     @CreatedDate
-    @Column(columnDefinition = "datetime default now()", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    @Column(columnDefinition = "datetime default now()")
     private LocalDateTime modifiedDate;
 
     @Builder
@@ -45,14 +47,6 @@ public class Notice {
         this.writerId = writerId;
         this.noticeSubject = noticeSubject;
         this.noticeContent = noticeContent;
-        this.createdDate = LocalDateTime.now();
-        this.modifiedDate = LocalDateTime.now();
     }
-
-    public Notice toEntity() {
-        return Notice.builder().id(id).writerId(writerId).noticeSubject(noticeSubject).noticeContent(noticeContent)
-                .build();
-    }
-
-
 }
+
