@@ -16,7 +16,8 @@ import java.util.List;
 @ToString(exclude = "carts")
 public class Member {
 
-  @Id @GeneratedValue(strategy = GenerationType.AUTO)
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   @NotBlank
@@ -26,13 +27,16 @@ public class Member {
   @NotBlank
   private String memberPassword;
 
-  @NotBlank @Column(length = 16)
+  @NotBlank
+  @Column(length = 16)
   private String memberName;
 
-  @NotBlank @Column(length = 13)
+  @NotBlank
+  @Column(length = 13)
   private String memberPhone;
 
-  @NotBlank @Column(length = 50)
+  @NotBlank
+  @Column(length = 50)
   private String memberEmail;
 
   @NotBlank
@@ -42,7 +46,8 @@ public class Member {
   @Enumerated(EnumType.STRING)
   private Role role = Role.USER;
 
-  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  // Member 삭제 시 Cart도 자동으로 삭제되며, orphanRemoval을 통해 Member와 연관이 끊어진 Cart도 삭제됨
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
   private List<Cart> carts;
 
   public static Member createMember(Member member, PasswordEncoder passwordEncoder) {
@@ -56,4 +61,3 @@ public class Member {
     return m;
   }
 }
-

@@ -6,8 +6,17 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- 헤더 -->
 <div class="my-container">
-
     <header>
+        <!-- 로그인 실패 메시지 -->
+        <div th:if="${error}" class="toast" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
+            <div class="toast-header">
+                <strong class="mr-auto text-danger">로그인 실패</strong>
+            </div>
+            <div class="toast-body">
+                <span th:text="${error}"></span> <!-- 서버에서 전달받은 에러 메시지 -->
+            </div>
+        </div>
+
         <nav class="navbar navbar-light">
             <div class="container d-flex justify-content-end align-items-center">
                 <!-- 가운데: 로고 -->

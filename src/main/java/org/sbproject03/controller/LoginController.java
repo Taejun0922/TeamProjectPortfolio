@@ -17,7 +17,7 @@ public class LoginController {
   // 로그인 실패 시 에러 메시지 전달
   @GetMapping("/loginFailed")
   public String loginError(RedirectAttributes redirectAttributes) {
-    redirectAttributes.addFlashAttribute("error", "로그인 실패: 아이디 또는 비밀번호를 확인하세요.");
+    redirectAttributes.addFlashAttribute("error", "아이디 또는 비밀번호를 확인해주세요.");
     System.out.println("❌ 로그인 실패: 아이디 또는 비밀번호 오류");
     return "redirect:/main"; // 로그인 실패 시 main 페이지로 리디렉션
   }

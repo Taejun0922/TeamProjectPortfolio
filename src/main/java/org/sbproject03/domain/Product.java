@@ -34,7 +34,7 @@ public class Product {
   @Column(length = 15, nullable = false)
   private String productCategory;
 
-  @Column(nullable = false)
+  @Column(columnDefinition = "boolean default false")
   private boolean isBestItem = false;
 }
 
