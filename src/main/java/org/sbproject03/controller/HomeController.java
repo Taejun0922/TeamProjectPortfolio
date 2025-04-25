@@ -64,8 +64,13 @@ public class HomeController {
         Cart cart = memberService.getLatestCartByMember(member);
         if (cart != null) {
             // 장바구니 정보가 존재하면 세션에 cartId 저장
-            session.setAttribute("cartId", cart.getCartId());
-            System.out.println("🛒 세션에 저장된 cartId: " + cart.getCartId());
+            Long cartId = cart.getCartId();
+            if (cartId != null) {
+                session.setAttribute("cartId", cartId);
+                System.out.println("🛒 세션에 저장된 cartId: " + cartId);
+            } else {
+                System.out.println("⚠️ cartId가 null입니다. 장바구니 정보가 잘못되었습니다.");
+            }
         } else {
             // 장바구니가 없을 경우 경고 메시지 출력
             System.out.println("⚠️ 해당 회원의 Cart가 없습니다.");

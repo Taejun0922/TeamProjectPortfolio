@@ -97,36 +97,36 @@ public class OrderController {
 
     return "redirect:/main";
   }
-
-  // 단일 상품 주문 처리
-  @PostMapping("/{productId}")
-  public String orderSingleProduct(@PathVariable String productId) {
-    Member member = (Member) session.getAttribute("userLoginInfo");
-    if (member == null) {
-      return "redirect:/login";
-    }
-
-    Object cartIdObj = session.getAttribute("cartId");
-    if (cartIdObj == null) {
-      return "redirect:/cart";
-    }
-    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
-
-    CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
-    if (item == null) {
-      return "redirect:/cart";
-    }
-
-    ProductOrder order = new ProductOrder();
-    order.setMember(member);
-    order.setProduct(item.getProduct());
-    order.setQuantity(item.getQuantity());
-    order.setTotalPrice(item.getProduct().getProductPrice() * item.getQuantity());
-
-    orderService.save(order);
-
-    cartItemService.deleteByCartIdAndProductId(cartId, productId);
-
-    return "order/orderCustomerInfo";
-  }
+// 단일 상품 주문 처리
+//  @PostMapping("/{productId}")
+//  public String orderSingleProduct(@PathVariable String productId) {
+//    Member member = (Member) session.getAttribute("userLoginInfo");
+//    if (member == null) {
+//      return "redirect:/login";
+//    }
+//
+//    Object cartIdObj = session.getAttribute("cartId");
+//    if (cartIdObj == null) {
+//      return "redirect:/cart";
+//    }
+//    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
+//
+//    CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
+//    if (item == null) {
+//      return "redirect:/cart";
+//    }
+//
+//    ProductOrder order = new ProductOrder();
+//    order.setMember(member);
+//    order.setProduct(item.getProduct());
+//    order.setQuantity(item.getQuantity());
+//    order.setTotalPrice(item.getProduct().getProductPrice() * item.getQuantity());
+//
+//    orderService.save(order);
+//
+//    cartItemService.deleteByCartIdAndProductId(cartId, productId);
+//
+//    return "order/orderCustomerInfo";
+//  }
 }
+
