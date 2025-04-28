@@ -74,18 +74,13 @@
                 <div class="col-sm-8">
                   <p class="form-control-plaintext" th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[0] : 'Guest'}">[주소]</p>
                 </div>
-              </div><div class="mb-3 row">
-              <label class="col-sm-4 col-form-label">상세 주소 :</label>
-              <div class="col-sm-8">
-                <p class="form-control-plaintext" th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[1] : 'Guest'}">[주소]</p>
               </div>
-            </div>
-              <!--<div class="mb-3 row">
-                <label class="col-sm-3 col-form-label">상세주소 :</label>
-                <div class="col-sm-9">
-                  <p class="form-control-plaintext" th:text="${member.memberId}">[상세주소]</p>
+              <div class="mb-3 row">
+                <label class="col-sm-4 col-form-label">상세 주소 :</label>
+                <div class="col-sm-8">
+                  <p class="form-control-plaintext" th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[1] : 'Guest'}">[주소]</p>
                 </div>
-              </div>-->
+            </div>
             </div>
           </div>
 
@@ -96,26 +91,32 @@
               <ul class="list-group list-group-flush">
                 <li class="list-group-item" th:each="item : ${cartItems}">
                   <div class="row align-items-center">
-                    <div class="col-3 text-center">
-                      <img th:src="|/CampingMarket/images/IMG_${item.productId}.jpg|"
+                    <div class="col-2 text-center">
+                      <img th:src="|/CampingMarket/images/IMG_${item.product.productId}.jpg|"
                            alt="상품 이미지"
                            class="img-fluid rounded"
                            style="max-width: 80px; height: auto;">
                     </div>
-                    <div class="col-5">
-                      <p class="mb-1">상품명: [[${item.productName}]]</p>
+                    <div class="col-4">
+                      <p class="mb-1">상품명: [[${item.product.productName}]]</p>
                     </div>
                     <div class="col-2 text-center">
                       <p class="mb-1">수량: [[${item.quantity}]]</p>
                     </div>
-                    <div class="col-2 text-end">
-                      <p class="mb-1">가격: [[${item.productPrice}]]</p>
+                    <div class="col-3 text-end">
+                      <p class="mb-1">가격: [[${#numbers.formatInteger(item.product.productPrice, 3, 'COMMA')}]]원</p>
                     </div>
                   </div>
                 </li>
               </ul>
+              <div class="mt-4 text-end">
+                <h5>
+                  총 결제 금액: <span class="fw-bold text-danger">[[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원</span>
+                </h5>
+              </div>
             </div>
           </div>
+
         </div>
 
         <!-- 결제 버튼 -->

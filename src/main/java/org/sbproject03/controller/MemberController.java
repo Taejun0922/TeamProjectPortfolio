@@ -41,7 +41,7 @@ public class MemberController {
     return "member/myPage";
   }
 
-  // 회원가입 후 자동 로그인 기능 제거 및 세션 저장
+  // 회원가입 후 세션 저장
   @PostMapping("/register")
   public String register(@Valid @ModelAttribute Member member, BindingResult bindingResult,
                          RedirectAttributes redirectAttributes, HttpServletRequest request) {
@@ -166,10 +166,30 @@ public class MemberController {
     return "redirect:/main";
   }
 
-  @GetMapping("/productOrder")
-  public String orderPage(HttpSession session, Model model) {
-    Member member = (Member) session.getAttribute("userLoginInfo");
-    model.addAttribute("member", member);
-    return "order/orderCustomerInfo";
-  }
+//  @GetMapping("/productOrder")
+//  public String orderPage(HttpSession session, Model model) {
+//    Member member = (Member) session.getAttribute("userLoginInfo");
+//    if (member == null) {
+//      return "redirect:/login"; // 로그인 안 되어 있으면 리다이렉트
+//    }
+//
+//    // 기존 데이터
+//    model.addAttribute("member", member);
+//
+//    // ✅ 추가: 카트 및 항목 조회
+//    List<Cart> carts = cartService.getCartsByMemberId(member.getId());
+//    if (carts.isEmpty()) {
+//      model.addAttribute("cartItems", List.of());
+//      model.addAttribute("cart", new Cart());
+//    } else {
+//      Cart cart = carts.get(0);
+//      List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
+//
+//      model.addAttribute("cart", cart);
+//      model.addAttribute("cartItems", cartItems);
+//    }
+//
+//    return "order/orderCustomerInfo";
+//  }
+
 }

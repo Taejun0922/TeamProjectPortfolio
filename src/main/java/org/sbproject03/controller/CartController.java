@@ -34,45 +34,20 @@ public class CartController {
   // 장바구니 화면 이동
   @GetMapping
   public ModelAndView requestCartId(ModelAndView mav) {
-    // 세션에서 cartId 확인
-    Long cartId = (Long) session.getAttribute("cartId");
-
-    // 세션에 cartId가 없는 경우 처리
-    if (cartId == null) {
-      System.out.println("❌ 세션에 cartId가 존재하지 않습니다.");
-    } else {
-      System.out.println("✅ 세션에서 cartId: " + cartId);
-    }
-
-    // 카트 조회
     Cart cart = getCart(); // 카트 조회 메서드
-    if (cart == null) {
-      System.out.println("❌ 카트를 조회할 수 없습니다. cart 객체가 null입니다.");
-    } else {
-      System.out.println("✅ 카트 조회 성공: " + cart);
-    }
+    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
+    List<CartItems> cartItems = cartItemService.getCartItems(cartId); // 장바구니 항목 조회
 
-    // cartId 값과 cart 객체의 정보 로그 출력
+    // 로그 출력
     System.out.println("===== 카트 정보 =====");
     System.out.println("cartId: " + cartId);
     System.out.println("totalPrice: " + cart.getTotalPrice());
     System.out.println("cart 객체: " + cart);
     System.out.println("=====================");
 
-    // 장바구니 항목 조회
-    List<CartItems> cartItems = cartItemService.getCartItems(cartId); // 장바구니 항목 조회
-    System.out.println("🛒 장바구니 항목 개수: " + cartItems.size());
-
-    // 장바구니 항목 정보 출력
-    for (CartItems item : cartItems) {
-      System.out.println("📦 상품명: " + item.getProduct().getProductName() + ", 수량: " + item.getQuantity());
-    }
-
-    // 모델에 카트 정보와 장바구니 항목 추가
     mav.addObject("cart", cart);
     mav.addObject("cartItems", cartItems);
     mav.setViewName("cart/cart");
-
     return mav;
   }
 

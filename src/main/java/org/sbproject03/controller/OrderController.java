@@ -3,10 +3,7 @@ package org.sbproject03.controller;
 import jakarta.servlet.http.HttpSession;
 import org.sbproject03.domain.*;
 import org.sbproject03.dto.ProductInfo;
-import org.sbproject03.service.CartItemService;
-import org.sbproject03.service.MemberService;
-import org.sbproject03.service.ProductOrderService;
-import org.sbproject03.service.ProductService;
+import org.sbproject03.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,44 +29,73 @@ public class OrderController {
   private CartItemService cartItemService;
 
   @Autowired
+  private CartService cartService;
+
+  @Autowired
   private ProductService productService;
 
   // 주문 페이지 출력
+//  @GetMapping
+//  public String showOrders(Model model) {
+//    Member member = (Member) session.getAttribute("userLoginInfo");
+//    if (member == null) {
+//      return "redirect:/login";
+//    }
+//
+//    model.addAttribute("member", member);
+//
+//    // ✅ 세션에서 cartId 가져오기 (Long 타입으로 변경)
+//    Object cartIdObj = session.getAttribute("cartId");
+//    if (cartIdObj == null) {
+//      return "redirect:/cart";
+//    }
+//
+//    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
+//
+//    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
+//    List<ProductInfo> productInfoList = new ArrayList<>();
+//
+//    for (CartItems item : cartItems) {
+//      Product product = item.getProduct();
+//
+//      // ProductInfo 객체 생성 시 필요한 인자들 전달
+//      ProductInfo productInfo = new ProductInfo(
+//          product.getProductId(),  // productId
+//          product.getProductName(), // productName
+//          product.getProductPrice(), // productPrice
+//          item.getQuantity()        // quantity
+//      );
+//
+//      productInfoList.add(productInfo);
+//    }
+//
+//    model.addAttribute("cartItems", productInfoList);
+//    return "order/orderCustomerInfo";
+//  }
+
   @GetMapping
-  public String showOrders(Model model) {
+  public String orderPage(HttpSession session, Model model) {
     Member member = (Member) session.getAttribute("userLoginInfo");
     if (member == null) {
-      return "redirect:/login";
+      return "redirect:/login"; // 로그인 안 되어 있으면 리다이렉트
     }
 
+    // 기존 데이터
     model.addAttribute("member", member);
 
-    // ✅ 세션에서 cartId 가져오기 (Long 타입으로 변경)
-    Object cartIdObj = session.getAttribute("cartId");
-    if (cartIdObj == null) {
-      return "redirect:/cart";
+    // ✅ 추가: 카트 및 항목 조회
+    List<Cart> carts = cartService.getCartsByMemberId(member.getId());
+    if (carts.isEmpty()) {
+      model.addAttribute("cartItems", List.of());
+      model.addAttribute("cart", Cart.createCart(member));
+    } else {
+      Cart cart = carts.get(0);
+      List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
+
+      model.addAttribute("cart", cart);
+      model.addAttribute("cartItems", cartItems);
     }
 
-    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
-
-    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
-    List<ProductInfo> productInfoList = new ArrayList<>();
-
-    for (CartItems item : cartItems) {
-      Product product = item.getProduct();
-
-      // ProductInfo 객체 생성 시 필요한 인자들 전달
-      ProductInfo productInfo = new ProductInfo(
-          product.getProductId(),  // productId
-          product.getProductName(), // productName
-          product.getProductPrice(), // productPrice
-          item.getQuantity()        // quantity
-      );
-
-      productInfoList.add(productInfo);
-    }
-
-    model.addAttribute("cartItems", productInfoList);
     return "order/orderCustomerInfo";
   }
 
@@ -97,6 +123,7 @@ public class OrderController {
 
     return "redirect:/main";
   }
+
 // 단일 상품 주문 처리
 //  @PostMapping("/{productId}")
 //  public String orderSingleProduct(@PathVariable String productId) {

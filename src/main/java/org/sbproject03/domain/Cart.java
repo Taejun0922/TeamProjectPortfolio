@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기존 생성자는 여전히 protected로 유지
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"member", "cartItems"})
 public class Cart {
 
