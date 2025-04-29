@@ -35,44 +35,6 @@ public class OrderController {
   private ProductService productService;
 
   // 주문 페이지 출력
-//  @GetMapping
-//  public String showOrders(Model model) {
-//    Member member = (Member) session.getAttribute("userLoginInfo");
-//    if (member == null) {
-//      return "redirect:/login";
-//    }
-//
-//    model.addAttribute("member", member);
-//
-//    // ✅ 세션에서 cartId 가져오기 (Long 타입으로 변경)
-//    Object cartIdObj = session.getAttribute("cartId");
-//    if (cartIdObj == null) {
-//      return "redirect:/cart";
-//    }
-//
-//    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
-//
-//    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
-//    List<ProductInfo> productInfoList = new ArrayList<>();
-//
-//    for (CartItems item : cartItems) {
-//      Product product = item.getProduct();
-//
-//      // ProductInfo 객체 생성 시 필요한 인자들 전달
-//      ProductInfo productInfo = new ProductInfo(
-//          product.getProductId(),  // productId
-//          product.getProductName(), // productName
-//          product.getProductPrice(), // productPrice
-//          item.getQuantity()        // quantity
-//      );
-//
-//      productInfoList.add(productInfo);
-//    }
-//
-//    model.addAttribute("cartItems", productInfoList);
-//    return "order/orderCustomerInfo";
-//  }
-
   @GetMapping
   public String orderPage(HttpSession session, Model model) {
     Member member = (Member) session.getAttribute("userLoginInfo");

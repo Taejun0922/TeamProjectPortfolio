@@ -21,3 +21,7 @@
 #editForm {
   display: none;
 }
+
+.form-control-plaintext {
+  padding-left: 0.5rem;
+}

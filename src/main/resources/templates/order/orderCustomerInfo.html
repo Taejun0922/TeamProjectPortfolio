@@ -41,54 +41,48 @@
       <form action="/CampingMarket/productOrder" method="post" class="w-75">
         <div class="row">
           <!-- 주문자 정보 -->
-          <div class="col-md-6 mb-4">
-            <div class="shadow p-4 bg-body-tertiary rounded h-100">
+          <div class="col-md-6 mb-4 d-flex justify-content-center">
+            <div class="shadow p-4 bg-body-tertiary rounded" style="width: 90%;">
               <h4 class="fw-bold text-center mb-4">주문자 정보</h4>
 
-              <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">ID :</label>
-                <div class="col-sm-8">
-                  <p class="form-control-plaintext" th:text="${member.memberId}"></p>
-                </div>
+              <div class="mb-3 text-center">
+                <label class="fw-bold d-block">ID</label>
+                <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+                   th:text="${member.memberId}"></p>
               </div>
-              <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">이름 :</label>
-                <div class="col-sm-8">
-                  <p class="form-control-plaintext" th:text="${member.memberName}">[사용자 이름]</p>
-                </div>
+
+              <div class="mb-3 text-center">
+                <label class="fw-bold d-block">이름</label>
+                <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+                   th:text="${member.memberName}"></p>
               </div>
-              <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">연락처 :</label>
-                <div class="col-sm-8">
-                  <p class="form-control-plaintext" th:text="${member.memberPhone}">[연락처]</p>
-                </div>
+
+              <div class="mb-3 text-center">
+                <label class="fw-bold d-block">연락처</label>
+                <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+                   th:text="${member.memberPhone}"></p>
               </div>
-              <!--<div class="mb-3 row">
-                <label class="col-sm-3 col-form-label">우편번호 :</label>
-                <div class="col-sm-9">
-                  <p class="form-control-plaintext" th:text="${member.memberPhone}">[우편번호]</p>
-                </div>
-              </div>-->
-              <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">주소 :</label>
-                <div class="col-sm-8">
-                  <p class="form-control-plaintext" th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[0] : 'Guest'}">[주소]</p>
-                </div>
+
+              <div class="mb-3 text-center">
+                <label class="fw-bold d-block">주소</label>
+                <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+                   th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[0] : 'Guest'}"></p>
               </div>
-              <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">상세 주소 :</label>
-                <div class="col-sm-8">
-                  <p class="form-control-plaintext" th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[1] : 'Guest'}">[주소]</p>
-                </div>
-            </div>
+
+              <div class="mb-3 text-center">
+                <label class="fw-bold d-block">상세 주소</label>
+                <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+                   th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[1] : 'Guest'}"></p>
+              </div>
             </div>
           </div>
 
           <!-- 주문 상품 정보 -->
           <div class="col-md-6 mb-4">
-            <div class="shadow p-4 bg-body-tertiary rounded h-100 section_prod">
+            <div class="shadow p-4 bg-body-tertiary rounded h-100 position-relative">
               <h4 class="fw-bold text-center mb-4">주문 상품 정보</h4>
-              <ul class="list-group list-group-flush">
+
+              <ul class="list-group list-group-flush mb-5">
                 <li class="list-group-item" th:each="item : ${cartItems}">
                   <div class="row align-items-center">
                     <div class="col-2 text-center">
@@ -109,14 +103,15 @@
                   </div>
                 </li>
               </ul>
-              <div class="mt-4 text-end">
-                <h5>
+
+              <!-- 오른쪽 하단 고정된 총 금액 표시 -->
+              <div class="position-absolute bottom-0 end-0 mb-3 me-3">
+                <h5 class="text-end m-0">
                   총 결제 금액: <span class="fw-bold text-danger">[[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원</span>
                 </h5>
               </div>
             </div>
           </div>
-
         </div>
 
         <!-- 결제 버튼 -->
