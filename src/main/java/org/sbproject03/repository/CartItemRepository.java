@@ -25,4 +25,8 @@ public interface CartItemRepository extends JpaRepository<CartItems, Long> {  //
     // cartId와 상품으로 장바구니 아이템 삭제하는 메서드
     @Transactional
     void deleteByCart_CartIdAndProduct_ProductId(Long cartId, String productId);  // cartId를 Long으로 수정
+
+    // cartId로 모든 장바구니 아이템을 삭제하는 메서드
+    @Transactional
+    void deleteByCart_CartId(Long cartId);  // cartId로 장바구니에 있는 모든 아이템을 삭제
 }

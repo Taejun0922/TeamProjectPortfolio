@@ -19,7 +19,7 @@ public class CartItemService {
     private ProductService productService;
 
     @Autowired
-    private CartService cartService;  // CartService 추가
+    private CartService cartService;
 
     // 장바구니에 담긴 모든 아이템을 가져오는 메서드
     public List<CartItems> getCartItems(Long cartId) {
@@ -52,6 +52,15 @@ public class CartItemService {
         CartItems cartItem = cartItemRepository.findByCart_CartIdAndProduct_ProductId(cartId, productId);
         if (cartItem != null) {
             cartItemRepository.delete(cartItem); // 장바구니에서 해당 상품 삭제
+        }
+    }
+
+    // 장바구니에 담긴 모든 아이템 삭제하는 메서드
+    public void deleteAllByCartId(Long cartId) {
+        // 특정 장바구니에 속한 모든 상품 삭제
+        List<CartItems> items = cartItemRepository.findAllByCart_CartId(cartId);
+        for (CartItems item : items) {
+            cartItemRepository.delete(item); // 각 아이템 삭제
         }
     }
 }

@@ -73,18 +73,16 @@ public class OrderController {
     if (cartIdObj == null) {
       return "redirect:/cart";
     }
-    Long cartId = Long.valueOf(cartIdObj.toString()); // cartId를 Long으로 변경
 
-    ProductOrder productOrder = new ProductOrder();
-    productOrder.setMember(member);
-    productOrder.setCartId(cartId);
-    orderService.save(productOrder);
+    Long cartId = Long.valueOf(cartIdObj.toString());
+    orderService.placeOrder(cartId, member); // ✅ 핵심 로직 위임
 
-    // 세션에서 cartId 제거
     session.removeAttribute("cartId");
 
     return "redirect:/main";
   }
+
+
 
 // 단일 상품 주문 처리
 //  @PostMapping("/{productId}")

@@ -7,6 +7,8 @@ import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -14,20 +16,13 @@ import java.time.LocalDateTime;
 @ToString
 public class ProductOrder {
 
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")
   private Member member;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id")
-  private Product product;
-
-  private int quantity;
-
-  private int totalPrice;
 
   @Enumerated(EnumType.STRING)
   private OrderStatus status = OrderStatus.ORDERED;
@@ -37,4 +32,7 @@ public class ProductOrder {
 
   private Long cartId;
 
+  // ✅ 주문 항목 리스트
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ProductOrderItem> items = new ArrayList<>();
 }

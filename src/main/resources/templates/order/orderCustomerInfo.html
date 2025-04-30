@@ -8,23 +8,15 @@
   <script th:src="@{/js/slider.js}"></script>
   <script th:src="@{/js/member.js}"></script>
   <script th:src="@{/js/main.js}"></script>
+  <script th:src="@{/js/order.js}"></script>
   <script th:src="@{/js/findAddress.js}"></script>
+
 
   <!-- css 경로 설정 -->
   <link th:href="@{/css/top.css}" rel="stylesheet">
   <link th:href="@{/css/bottom.css}" rel="stylesheet">
   <link th:href="@{/css/main.css}" rel="stylesheet">
   <link th:href="@{/css/orderCustomerInfo.css}" rel="stylesheet">
-
-  <script th:inline="javascript">
-    let productData = /*[[${productByCategory}]]*/ {};
-  </script>
-  <script>
-    function showEditForm() {
-    var editForm = document.getElementById("editForm");
-    editForm.style.display = (editForm.style.display === "none" || editForm.style.display === "") ? "block" : "none";
-    }
-  </script>
 </head>
 <body>
 <div id="wrap">
@@ -38,7 +30,7 @@
     </div>
     <!-- 중단 : 고객 정보 -->
     <div class="d-flex justify-content-center">
-      <form action="/CampingMarket/productOrder" method="post" class="w-75">
+      <form action="/CampingMarket/productOrder" method="post" class="w-75" onsubmit="return handleOrderSubmit(event)">
         <div class="row">
           <!-- 주문자 정보 -->
           <div class="col-md-6 mb-4 d-flex justify-content-center">

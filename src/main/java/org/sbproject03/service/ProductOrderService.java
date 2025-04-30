@@ -1,12 +1,12 @@
 package org.sbproject03.service;
 
-import org.sbproject03.domain.CartItems;
-import org.sbproject03.domain.Product;
-import org.sbproject03.domain.ProductOrder;
-import org.sbproject03.domain.OrderStatus;
+import org.sbproject03.domain.*;
 import org.sbproject03.repository.ProductOrderRepository;
+import org.sbproject03.repository.ProductOrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductOrderService {
@@ -15,38 +15,53 @@ public class ProductOrderService {
   private ProductOrderRepository productOrderRepository;
 
   @Autowired
-  private CartItemService cartItemService;
+  private ProductOrderItemRepository productOrderItemRepository;
 
   @Autowired
-  private ProductService productService;
+  private CartItemService cartItemService;
 
-  // 주문 저장 메서드 (주문 상태 포함)
+  /**
+   * 주문 저장 (기본 상태 포함)
+   */
   public void save(ProductOrder productOrder) {
-    // 기본 주문 상태 설정
     productOrder.setStatus(OrderStatus.ORDERED);
     productOrderRepository.save(productOrder);
   }
 
-  // 개별 상품 주문 처리 (cartId는 Long, productId는 String)
-  public void orderSingleProduct(Long cartId, String productId) {
-    // 장바구니에서 상품 가져오기
-    CartItems cartItem = cartItemService.findByCartIdAndProductId(cartId, productId);
-    if (cartItem == null) {
-      throw new IllegalArgumentException("해당 상품이 장바구니에 없습니다.");
+  /**
+   * 주문 항목 저장
+   */
+  public void saveOrderItem(ProductOrderItem orderItem) {
+    productOrderItemRepository.save(orderItem);
+  }
+
+  /**
+   * 전체 장바구니 주문 처리
+   */
+  public void placeOrder(Long cartId, Member member) {
+    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
+    if (cartItems == null || cartItems.isEmpty()) {
+      throw new IllegalStateException("장바구니에 상품이 없습니다.");
     }
 
-    Product product = cartItem.getProduct();
+    // 주문 생성 및 저장
+    ProductOrder order = new ProductOrder();
+    order.setMember(member);
+    order.setCartId(cartId);
+    save(order); // ID가 생성됨
 
-    // 주문 객체 생성
-    ProductOrder productOrder = new ProductOrder();
-    productOrder.setProduct(product);
-    productOrder.setQuantity(cartItem.getQuantity());
-    productOrder.setTotalPrice(product.getProductPrice() * cartItem.getQuantity());
-    productOrder.setMember(cartItem.getCart().getMember()); // Member 설정
+    // 주문 항목 저장
+    for (CartItems item : cartItems) {
+      ProductOrderItem orderItem = new ProductOrderItem();
+      orderItem.setOrder(order);
+      orderItem.setProduct(item.getProduct());
+      orderItem.setQuantity(item.getQuantity());
+      orderItem.setPrice(item.getProduct().getProductPrice() * item.getQuantity());
 
-    save(productOrder); // 주문 저장
+      saveOrderItem(orderItem);
+    }
 
-    // 장바구니에서 해당 상품 제거
-    cartItemService.deleteByCartIdAndProductId(cartId, productId);
+    // 장바구니 비우기
+    cartItemService.deleteAllByCartId(cartId);
   }
 }
