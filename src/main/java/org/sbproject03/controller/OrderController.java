@@ -5,6 +5,7 @@ import org.sbproject03.domain.*;
 import org.sbproject03.dto.ProductInfo;
 import org.sbproject03.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,19 +40,18 @@ public class OrderController {
   public String orderPage(HttpSession session, Model model) {
     Member member = (Member) session.getAttribute("userLoginInfo");
     if (member == null) {
-      return "redirect:/login"; // 로그인 안 되어 있으면 리다이렉트
+      return "redirect:/login";
     }
 
-    // 기존 데이터
     model.addAttribute("member", member);
 
-    // ✅ 추가: 카트 및 항목 조회
     List<Cart> carts = cartService.getCartsByMemberId(member.getId());
     if (carts.isEmpty()) {
       model.addAttribute("cartItems", List.of());
       model.addAttribute("cart", Cart.createCart(member));
     } else {
       Cart cart = carts.get(0);
+      session.setAttribute("cartId", cart.getCartId()); // ✅ 세션에 cartId 저장
       List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
 
       model.addAttribute("cart", cart);
@@ -60,6 +60,7 @@ public class OrderController {
 
     return "order/orderCustomerInfo";
   }
+
 
   // 전체 주문 처리
   @PostMapping
@@ -74,14 +75,13 @@ public class OrderController {
       return "redirect:/cart";
     }
 
-    Long cartId = Long.valueOf(cartIdObj.toString());
-    orderService.placeOrder(cartId, member); // ✅ 핵심 로직 위임
+    Long cartId = Long.parseLong(cartIdObj.toString());
 
+    orderService.placeOrder(cartId, member);
     session.removeAttribute("cartId");
 
-    return "redirect:/main";
+    return "redirect:/main"; // 주문 완료 후 이동
   }
-
 
 
 // 단일 상품 주문 처리
