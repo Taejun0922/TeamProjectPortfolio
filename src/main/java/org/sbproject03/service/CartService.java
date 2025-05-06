@@ -15,8 +15,8 @@ public class CartService {
   private CartRepository cartRepository;
 
   // 카트 저장
-  public void save(Cart cart) {
-    cartRepository.save(cart);
+  public Cart save(Cart cart) {
+    return cartRepository.save(cart);  // 저장된 Cart 객체를 반환
   }
 
   // 카트 읽기 - cartId는 Long 타입이므로 Long으로 조회
