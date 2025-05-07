@@ -98,9 +98,12 @@
 
               <!-- 오른쪽 하단 고정된 총 금액 표시 -->
               <div class="position-absolute bottom-0 end-0 mb-3 me-3">
-                <h5 class="text-end m-0">
-                  총 결제 금액: <span class="fw-bold text-danger">[[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원</span>
-                </h5>
+                <th:block th:if="${cartItems != null and cartItems.size() > 1}">
+                  <h5>총 결제 금액: <span class="fw-bold text-danger">[[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원</span></h5>
+                </th:block>
+                <th:block th:if="${cartItems != null and cartItems.size() == 1}">
+                  <h5>총 결제 금액: <span class="fw-bold text-danger">[[${#numbers.formatInteger(cartItems[0].product.productPrice * cartItems[0].quantity, 3, 'COMMA')}]]원]</span></h5>
+                </th:block>
               </div>
             </div>
           </div>

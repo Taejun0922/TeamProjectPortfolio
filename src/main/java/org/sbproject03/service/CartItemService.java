@@ -1,6 +1,5 @@
 package org.sbproject03.service;
 
-import org.sbproject03.domain.Cart;
 import org.sbproject03.domain.CartItems;
 import org.sbproject03.domain.Product;
 import org.sbproject03.repository.CartItemRepository;
@@ -18,49 +17,47 @@ public class CartItemService {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private CartService cartService;
-
-    // 장바구니에 담긴 모든 아이템을 가져오는 메서드
-    public List<CartItems> getCartItems(Long cartId) {
-        return cartItemRepository.findAllByCart_CartId(cartId);  // cartId를 Long으로 수정
+    // 장바구니에 담긴 모든 아이템을 가져오는 메서드 (카트 정보를 사용하지 않음)
+    public List<CartItems> getCartItems() {
+        // 카트 정보 없이 모든 장바구니 아이템을 가져옵니다.
+        return cartItemRepository.findAll();
     }
 
     // 장바구니에 상품을 저장하는 메서드
     public void save(CartItems cartItems) {
-        cartItemRepository.save(cartItems);
+        cartItemRepository.save(cartItems); // 장바구니에 상품 저장
     }
 
     // 장바구니에서 개별 상품을 삭제하는 메서드
-    public void deleteCartItem(String productId, Long cartId) {
-        Product product = productService.getProductById(productId); // 상품 정보 가져오기
-        CartItems item = cartItemRepository.findByCart_CartIdAndProduct_ProductId(cartId, productId);  // cartId와 productId로 찾기
+    public void deleteCartItem(String productId) {
+        // 카트 정보 없이 상품 ID로 장바구니 아이템을 찾고 삭제
+        CartItems item = cartItemRepository.findByProduct_ProductId(productId);
         if (item != null) {
-            cartItemRepository.delete(item); // 장바구니에서 해당 아이템 삭제
+            cartItemRepository.delete(item); // 장바구니에서 해당 상품 삭제
         }
     }
 
-    // 장바구니에서 특정 상품을 찾는 메서드
-    public CartItems findByCartIdAndProductId(Long cartId, String productId) {
-        Product product = productService.getProductById(productId);
-        return cartItemRepository.findByCart_CartIdAndProduct_ProductId(cartId, productId);  // cartId와 productId로 찾기
+    // 장바구니에서 특정 상품을 찾는 메서드 (상품 주문시 카트 정보 없이 처리)
+    public CartItems findCartItemByProductId(String productId) {
+        // 상품 ID로 카트에 담긴 상품을 찾기
+        return cartItemRepository.findByProduct_ProductId(productId);
     }
 
     // 개별 상품 주문 후 장바구니에서 해당 아이템을 삭제하는 메서드
-    public void deleteByCartIdAndProductId(Long cartId, String productId) {
-        Product product = productService.getProductById(productId);
-        CartItems cartItem = cartItemRepository.findByCart_CartIdAndProduct_ProductId(cartId, productId);
+    public void deleteByProductId(String productId) {
+        // 카트 정보 없이 상품 ID로 해당 상품을 찾아 삭제
+        CartItems cartItem = cartItemRepository.findByProduct_ProductId(productId);
         if (cartItem != null) {
-            cartItemRepository.delete(cartItem); // 장바구니에서 해당 상품 삭제
+            cartItemRepository.delete(cartItem); // 해당 상품 삭제
         }
     }
 
     // 장바구니에 담긴 모든 아이템 삭제하는 메서드
-    public void deleteAllByCartId(Long cartId) {
-        // 특정 장바구니에 속한 모든 상품 삭제
-        List<CartItems> items = cartItemRepository.findAllByCart_CartId(cartId);
+    public void deleteAllItems() {
+        // 장바구니에 담긴 모든 상품을 삭제
+        List<CartItems> items = cartItemRepository.findAll();
         for (CartItems item : items) {
-            cartItemRepository.delete(item); // 각 아이템 삭제
+            cartItemRepository.delete(item); // 모든 아이템 삭제
         }
     }
 }

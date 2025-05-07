@@ -128,54 +128,74 @@ public class OrderController {
     return "order/orderCustomerInfo";  // 단일 상품 주문 페이지로 이동
   }
 
-
   // 단일 상품 주문 처리
   @PostMapping("/{productId}")
-  public String orderSingleProduct(@PathVariable String productId) {
+  public String orderSingleProduct(@PathVariable String productId, @RequestParam("quantity") int quantity) {
+    // 로그인 확인
     Member member = (Member) session.getAttribute("userLoginInfo");
     if (member == null) {
-      return "redirect:/login";
+      return "redirect:/login";  // 로그인 안된 사용자 리다이렉트
     }
 
+    // 카트 정보 확인
     Object cartIdObj = session.getAttribute("cartId");
     if (cartIdObj == null) {
-      return "redirect:/cart";
+      // 카트가 없으면 카트 정보 없이 개별 주문을 처리
+      System.out.println("카트 정보 없음. 개별 주문 처리 진행.");
     }
 
-    Long cartId = Long.parseLong(cartIdObj.toString());
-
-    // 장바구니에서 해당 상품 가져오기
-    CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
+    // 카트에서 상품 찾기: 카트 정보 없이 상품을 찾기
+    CartItems item = cartItemService.findByProduct_ProductId(productId);  // 카트가 없으면 상품만 찾기
     if (item == null) {
-      return "redirect:/cart";
+      return "redirect:/cart"; // 상품이 카트에 없으면 카트 페이지로 리다이렉트
     }
 
     Product product = item.getProduct();
-    int quantity = item.getQuantity();
+    int itemQuantity = item.getQuantity();
 
-    // 1. 주문 생성
+    // 주문 수량이 카트의 수량보다 많으면 리다이렉트
+    if (quantity > itemQuantity) {
+      return "redirect:/cart"; // 수량 초과 시 다시 카트 페이지로 리다이렉트
+    }
+
+    // 주문 생성
     ProductOrder order = new ProductOrder();
     order.setMember(member);
-    order.setCartId(cartId);  // 필요 시 장바구니 ID 저장
+    order.setStatus(OrderStatus.ORDERED); // 기본 주문 상태
 
-    // 2. 주문 항목 생성
     ProductOrderItem orderItem = new ProductOrderItem();
     orderItem.setProduct(product);
     orderItem.setQuantity(quantity);
-    orderItem.setPrice(product.getProductPrice() * quantity);
+    orderItem.setPrice(product.getProductPrice() * quantity); // 가격 계산
     orderItem.setOrder(order);  // 양방향 연관 설정
 
-    // 3. 주문에 항목 추가
     order.getItems().add(orderItem);
 
-    // 4. 저장
-    orderService.save(order);
+    orderService.save(order);  // 주문 저장
 
-    // 5. 장바구니 항목 제거
-    cartItemService.deleteByCartIdAndProductId(cartId, productId);
+    // 장바구니에서 해당 상품 삭제 또는 수량 감소: 카트 정보가 없으면 상품을 삭제
+    if (cartIdObj != null) {
+      Long cartId = Long.parseLong(cartIdObj.toString());
+      cartItemService.deleteByProductId(productId);  // 카트에서 상품 완전 삭제
+    }
 
-    // 6. 주문 정보 페이지로 이동 (모델에 전달하려면 모델 파라미터 필요)
-    return "redirect:/order/customer-info?orderId=" + order.getId(); // 예시로 주문 정보 페이지로 이동
+    return "redirect:/main"; // 주문 완료 후 메인 페이지로 이동
+  }
+
+
+  // 카트의 총 가격을 업데이트하는 메서드
+  public void updateTotalPrice(Long cartId) {
+    Cart cart = cartService.read(cartId);
+    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
+
+    int totalPrice = 0;
+    for (CartItems item : cartItems) {
+      Product product = item.getProduct();
+      totalPrice += product.getProductPrice() * item.getQuantity();
+    }
+
+    cart.setTotalPrice(totalPrice);
+    cartService.save(cart);
   }
 }
 
