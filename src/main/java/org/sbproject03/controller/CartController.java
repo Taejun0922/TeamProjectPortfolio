@@ -87,7 +87,7 @@ public class CartController {
   public String deleteCartItem(@PathVariable String productId) {
     Cart cart = getCart();
     Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
-    cartItemService.deleteCartItem(productId, cartId);
+    cartItemService.deleteCartItem(productId);
 
     updateTotalPrice(cartId);
     return "redirect:/cart";

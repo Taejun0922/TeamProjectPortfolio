@@ -30,9 +30,14 @@ public class ProductOrder {
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime orderDate = LocalDateTime.now();
 
-  private Long cartId;
+  private Long cartId; // 전체 주문일 경우에만 사용 (단일 주문 시 null)
 
   // ✅ 주문 항목 리스트
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ProductOrderItem> items = new ArrayList<>();
+
+  public void addOrderItem(ProductOrderItem item) {
+    this.items.add(item);
+    item.setOrder(this);
+  }
 }

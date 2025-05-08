@@ -48,10 +48,11 @@ public class OrderController {
     List<Cart> carts = cartService.getCartsByMemberId(member.getId());
     if (carts.isEmpty()) {
       model.addAttribute("cartItems", List.of());
-      model.addAttribute("cart", Cart.createCart(member));
+      model.addAttribute("cart", Cart.createCart(member));  // 팩토리 메소드 사용
     } else {
       Cart cart = carts.get(0);
-      session.setAttribute("cartId", cart.getCartId()); // ✅ 세션에 cartId 저장
+      session.setAttribute("cartId", cart.getCartId()); // 세션에 cartId 저장
+      // 수정된 부분: cartId로 장바구니 아이템을 가져옵니다.
       List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
 
       model.addAttribute("cart", cart);
@@ -83,49 +84,38 @@ public class OrderController {
   }
 
   // 단일 상품 주문 페이지 이동
-  @GetMapping("/{productId}")
-  public String showSingleOrderPage(@PathVariable String productId, HttpSession session, Model model) {
-    // 로그인된 사용자 확인
+  @GetMapping("/single")
+  public String showSingleOrderPage(@RequestParam("id") String productId,
+                                    @RequestParam("quantity") int quantity,
+                                    Model model) {
     Member member = (Member) session.getAttribute("userLoginInfo");
     if (member == null) {
       return "redirect:/login";
     }
 
-    // 장바구니 ID 확인
-    Object cartIdObj = session.getAttribute("cartId");
-    if (cartIdObj == null) {
-      return "redirect:/cart";  // 장바구니가 없으면 다시 카트 페이지로 리다이렉트
-    }
-    Long cartId = Long.valueOf(cartIdObj.toString());
-
-    // 카트에서 단일 상품 조회
-    Cart cart = cartService.read(cartId);  // Cart 객체를 가져옵니다.
-    if (cart == null) {
-      System.out.println("Cart not found for cartId: " + cartId);  // 카트가 없을 경우 확인
-      return "redirect:/cart";  // 카트가 없으면 장바구니로 리다이렉트
+    Product product = productService.getProductById(productId);  // 상품 조회
+    if (product == null) {
+      return "redirect:/cart";
     }
 
-    System.out.println("Found Cart: " + cart);  // 카트 객체 확인
+    // 임시 CartItems 생성 (DB 저장 X)
+    CartItems item = new CartItems();
+    item.setProduct(product);
+    item.setQuantity(quantity);
 
-    // 장바구니에서 상품 찾기
-    CartItems item = cartItemService.findByCartIdAndProductId(cartId, productId);
-    if (item == null) {
-      return "redirect:/cart";  // 장바구니에 해당 상품이 없으면 다시 장바구니로 이동
-    }
+    List<CartItems> cartItems = new ArrayList<>();
+    cartItems.add(item);
 
-    Product product = item.getProduct();
-    int quantity = item.getQuantity();
-    int totalPrice = product.getProductPrice() * quantity;
+    // 가상 Cart 생성
+    Cart tempCart = Cart.createCart(member);  // 팩토리 메소드 사용
+    tempCart.setCartItems(cartItems);
+    tempCart.updateTotalPrice();  // subtotal로 총 금액 계산
 
-    // 모델에 데이터 추가
     model.addAttribute("member", member);
-    model.addAttribute("product", product);
-    model.addAttribute("quantity", quantity);
-    model.addAttribute("totalPrice", totalPrice);  // 단일 상품의 총 가격
-    model.addAttribute("cartTotalPrice", cart.getTotalPrice());  // 카트의 전체 가격
+    model.addAttribute("cartItems", cartItems);  // 뷰에 cartItems 제공
+    model.addAttribute("cart", tempCart);        // 총 금액 출력용
 
-    // 주문 페이지로 이동
-    return "order/orderCustomerInfo";  // 단일 상품 주문 페이지로 이동
+    return "order/orderCustomerInfo";
   }
 
   // 단일 상품 주문 처리
@@ -145,7 +135,7 @@ public class OrderController {
     }
 
     // 카트에서 상품 찾기: 카트 정보 없이 상품을 찾기
-    CartItems item = cartItemService.findByProduct_ProductId(productId);  // 카트가 없으면 상품만 찾기
+    CartItems item = cartItemService.findCartItemByProductId(productId);  // 카트가 없으면 상품만 찾기
     if (item == null) {
       return "redirect:/cart"; // 상품이 카트에 없으면 카트 페이지로 리다이렉트
     }
@@ -180,22 +170,6 @@ public class OrderController {
     }
 
     return "redirect:/main"; // 주문 완료 후 메인 페이지로 이동
-  }
-
-
-  // 카트의 총 가격을 업데이트하는 메서드
-  public void updateTotalPrice(Long cartId) {
-    Cart cart = cartService.read(cartId);
-    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
-
-    int totalPrice = 0;
-    for (CartItems item : cartItems) {
-      Product product = item.getProduct();
-      totalPrice += product.getProductPrice() * item.getQuantity();
-    }
-
-    cart.setTotalPrice(totalPrice);
-    cartService.save(cart);
   }
 }
 

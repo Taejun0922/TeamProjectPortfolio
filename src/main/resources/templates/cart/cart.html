@@ -65,7 +65,7 @@
             <td class="text-center fw-bold text-danger product-total" th:id="|price-${item.product.productId}|" th:text="${item.product.productPrice * item.quantity}"></td>
             <td class="text-center">
               <div class="d-grid gap-2">
-                <a th:href="@{/order/{id}(id=${item.product.productId})}" class="btn btn-outline-success btn-sm">
+                <a th:href="@{/order/single(id=${item.product.productId}, quantity=${item.quantity})}" class="btn btn-outline-success btn-sm">
                   💳 주문하기
                 </a>
                 <form th:action="@{|/cart/${item.product.productId}|}" method="post">
