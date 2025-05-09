@@ -78,4 +78,29 @@ public class ProductOrderService {
     cartRepository.delete(cart);
   }
 
+  // ✅ 단일 상품 주문 처리
+  @Transactional
+  public void placeSingleOrder(Member memberParam, Product product, int quantity) {
+    // 영속 상태의 member 조회
+    Member member = memberRepository.findById(memberParam.getId())
+            .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+    // 주문 생성
+    ProductOrder order = new ProductOrder();
+    order.setMember(member);
+    order.setStatus(OrderStatus.ORDERED);
+
+    // 주문 항목 생성
+    ProductOrderItem orderItem = new ProductOrderItem();
+    orderItem.setOrder(order);
+    orderItem.setProduct(product);
+    orderItem.setQuantity(quantity);
+    orderItem.setPrice(product.getProductPrice() * quantity);
+
+    // 저장
+    save(order);           // 주문 저장
+    saveOrderItem(orderItem); // 주문 항목 저장
+  }
+
+
 }
