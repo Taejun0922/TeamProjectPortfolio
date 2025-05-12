@@ -1,5 +1,6 @@
 package org.sbproject03.service;
 
+import jakarta.servlet.http.HttpSession;
 import org.sbproject03.domain.*;
 import org.sbproject03.repository.CartRepository;
 import org.sbproject03.repository.MemberRepository;
@@ -13,6 +14,9 @@ import java.util.List;
 
 @Service
 public class ProductOrderService {
+
+  @Autowired
+  private HttpSession session;
 
   @Autowired
   private ProductOrderRepository productOrderRepository;
@@ -81,7 +85,7 @@ public class ProductOrderService {
   // ✅ 단일 상품 주문 처리
   @Transactional
   public void placeSingleOrder(Member memberParam, Product product, int quantity) {
-    // 영속 상태의 member 조회
+    // 회원 정보 확인
     Member member = memberRepository.findById(memberParam.getId())
             .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
@@ -92,15 +96,21 @@ public class ProductOrderService {
 
     // 주문 항목 생성
     ProductOrderItem orderItem = new ProductOrderItem();
-    orderItem.setOrder(order);
     orderItem.setProduct(product);
     orderItem.setQuantity(quantity);
     orderItem.setPrice(product.getProductPrice() * quantity);
 
-    // 저장
-    save(order);           // 주문 저장
-    saveOrderItem(orderItem); // 주문 항목 저장
+    // 주문 항목 추가
+    order.addOrderItem(orderItem);
+
+    // 주문 저장
+    productOrderRepository.save(order);
+
+    // 카트에서 해당 상품만 삭제
+    Object cartIdObj = session.getAttribute("cartId");
+    if (cartIdObj != null) {
+      Long cartId = Long.parseLong(cartIdObj.toString());
+      cartItemService.deleteByCartIdAndProductId(cartId, product.getProductId()); // 선택한 상품만 삭제
+    }
   }
-
-
 }

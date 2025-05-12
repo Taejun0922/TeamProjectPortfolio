@@ -30,7 +30,7 @@
     </div>
     <!-- 중단 : 고객 정보 -->
     <div class="d-flex justify-content-center">
-      <form action="/CampingMarket/order" method="post" class="w-75" onsubmit="return showSuccessAlert()">
+      <form th:action="@{${isSingleOrder} ? '/order/' + ${productId} : '/order'}" method="post" class="w-75" onsubmit="return showSuccessAlert()">
       <div class="row">
           <!-- 주문자 정보 -->
           <div class="col-md-6 mb-4 d-flex justify-content-center">
@@ -108,6 +108,11 @@
             </div>
           </div>
         </div>
+
+        <!-- 상품개수 -->
+        <th:block th:if="${isSingleOrder}">
+          <input type="hidden" name="quantity" th:value="${cartItems[0].quantity}" />
+        </th:block>
 
         <!-- 결제 버튼 -->
         <div class="text-center my-3">

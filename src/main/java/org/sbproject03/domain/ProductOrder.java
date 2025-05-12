@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "items") // 순환 참조 방지
 public class ProductOrder {
 
   @Id
@@ -30,14 +30,16 @@ public class ProductOrder {
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime orderDate = LocalDateTime.now();
 
-  private Long cartId; // 전체 주문일 경우에만 사용 (단일 주문 시 null)
+  private Long cartId;
 
-  // ✅ 주문 항목 리스트
+  // ✅ 연관관계 설정
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ProductOrderItem> items = new ArrayList<>();
 
+  // ✅ 연관관계 편의 메서드
   public void addOrderItem(ProductOrderItem item) {
-    this.items.add(item);
+    items.add(item);
     item.setOrder(this);
   }
 }
+

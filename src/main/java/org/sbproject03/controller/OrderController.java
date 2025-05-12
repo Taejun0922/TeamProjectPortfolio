@@ -2,10 +2,8 @@ package org.sbproject03.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.sbproject03.domain.*;
-import org.sbproject03.dto.ProductInfo;
 import org.sbproject03.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,23 +15,12 @@ import java.util.List;
 @RequestMapping("/order")
 public class OrderController {
 
-  @Autowired
-  private ProductOrderService orderService;
-
-  @Autowired
-  private MemberService memberService;
-
-  @Autowired
-  private HttpSession session;
-
-  @Autowired
-  private CartItemService cartItemService;
-
-  @Autowired
-  private CartService cartService;
-
-  @Autowired
-  private ProductService productService;
+  @Autowired private ProductOrderService orderService;
+  @Autowired private MemberService memberService;
+  @Autowired private HttpSession session;
+  @Autowired private CartItemService cartItemService;
+  @Autowired private CartService cartService;
+  @Autowired private ProductService productService;
 
   // 전체 상품 주문 페이지 이동
   @GetMapping
@@ -44,17 +31,21 @@ public class OrderController {
     }
 
     model.addAttribute("member", member);
+    model.addAttribute("isSingleOrder", false); // 👉 전체 주문용
+
+    System.out.println("[GET /order] 전체 주문 페이지 요청 by memberId: " + member.getId());
 
     List<Cart> carts = cartService.getCartsByMemberId(member.getId());
     if (carts.isEmpty()) {
+      System.out.println("장바구니가 비어 있습니다.");
       model.addAttribute("cartItems", List.of());
-      model.addAttribute("cart", Cart.createCart(member));  // 팩토리 메소드 사용
+      model.addAttribute("cart", Cart.createCart(member));
     } else {
       Cart cart = carts.get(0);
-      session.setAttribute("cartId", cart.getCartId()); // 세션에 cartId 저장
-      // 수정된 부분: cartId로 장바구니 아이템을 가져옵니다.
-      List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
+      session.setAttribute("cartId", cart.getCartId());
+      System.out.println("세션에 cartId 저장됨: " + cart.getCartId());
 
+      List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
       model.addAttribute("cart", cart);
       model.addAttribute("cartItems", cartItems);
     }
@@ -72,15 +63,17 @@ public class OrderController {
 
     Object cartIdObj = session.getAttribute("cartId");
     if (cartIdObj == null) {
+      System.out.println("[POST /order] 세션에 cartId 없음. 장바구니로 리다이렉트");
       return "redirect:/cart";
     }
 
     Long cartId = Long.parseLong(cartIdObj.toString());
+    System.out.println("[POST /order] 전체 주문 실행 - cartId: " + cartId + ", memberId: " + member.getId());
 
     orderService.placeOrder(cartId, member);
     session.removeAttribute("cartId");
 
-    return "redirect:/main"; // 주문 완료 후 이동
+    return "redirect:/main";
   }
 
   // 단일 상품 주문 페이지 이동
@@ -93,28 +86,45 @@ public class OrderController {
       return "redirect:/login";
     }
 
-    // 상품 정보 조회
-    Product product = productService.getProductById(productId);  // 상품 조회
-    if (product == null) {
-      return "redirect:/cart"; // 상품이 없다면 장바구니로 리다이렉트
+    Product product = productService.getProductById(productId);
+    if (product == null || quantity <= 0) {
+      return "redirect:/cart";
     }
 
-    // CartItems 생성
-    CartItems item = new CartItems();
-    item.setProduct(product);
-    item.setQuantity(quantity);
+    List<Cart> carts = cartService.getCartsByMemberId(member.getId());
+    if (carts.isEmpty()) {
+      return "redirect:/cart";
+    }
 
-    List<CartItems> cartItems = new ArrayList<>();
-    cartItems.add(item);  // 주문할 상품을 담은 리스트 생성
+    Cart cart = carts.get(0);
+    session.setAttribute("cartId", cart.getCartId());
+    System.out.println("[GET /order/single] 단일 주문 페이지 - cartId: " + cart.getCartId() + ", productId: " + productId);
 
-    // 모델에 상품 정보 전달
+    List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
+    CartItems targetItem = null;
+    for (CartItems item : cartItems) {
+      if (item.getProduct().getProductId().equals(productId)) {
+        targetItem = item;
+        break;
+      }
+    }
+
+    if (targetItem == null) {
+      System.out.println("장바구니에 해당 상품이 없습니다: " + productId);
+      return "redirect:/cart";
+    }
+
+    targetItem.setQuantity(quantity);
+    List<CartItems> singleItemList = new ArrayList<>();
+    singleItemList.add(targetItem);
+
     model.addAttribute("member", member);
-    model.addAttribute("cartItems", cartItems);  // 주문할 상품 정보만 전달
+    model.addAttribute("cartItems", singleItemList);
+    model.addAttribute("isSingleOrder", true); // 👉 개별 주문용
+    model.addAttribute("productId", productId); // 👉 뷰에서 form action용
 
-    return "order/orderCustomerInfo"; // 주문 정보 페이지로 이동
+    return "order/orderCustomerInfo";
   }
-
-
 
   // 단일 상품 주문 처리
   @PostMapping("/{productId}")
@@ -130,18 +140,17 @@ public class OrderController {
       return "redirect:/cart";
     }
 
-    // 👉 개별 상품만 주문 처리
+    System.out.println("[POST /order/" + productId + "] 단일 주문 실행 - quantity: " + quantity);
+
     orderService.placeSingleOrder(member, product, quantity);
 
-    // 👉 카트에서 해당 상품만 삭제 (cartId는 세션에 저장되어 있어야 함)
     Object cartIdObj = session.getAttribute("cartId");
     if (cartIdObj != null) {
       Long cartId = Long.parseLong(cartIdObj.toString());
+      System.out.println("단일 주문 후 해당 상품 삭제 - cartId: " + cartId + ", productId: " + productId);
       cartItemService.deleteByCartIdAndProductId(cartId, productId);
     }
 
     return "redirect:/main";
   }
-
 }
-
