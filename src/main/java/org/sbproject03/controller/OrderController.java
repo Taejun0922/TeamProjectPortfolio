@@ -153,4 +153,56 @@ public class OrderController {
 
     return "redirect:/main";
   }
+
+  // 상세페이지에서 주문페이지로 이동
+  @GetMapping("/direct")
+  public String directOrderPage(@RequestParam("productId") String productId,
+                                @RequestParam("quantity") int quantity,
+                                Model model) {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login";
+    }
+
+    Product product = productService.getProductById(productId);
+    if (product == null || quantity <= 0) {
+      return "redirect:/main";
+    }
+
+    // 직접 주문용 가짜 CartItems 리스트 만들기
+    CartItems tempItem = new CartItems();
+    tempItem.setProduct(product);
+    tempItem.setQuantity(quantity);
+
+    List<CartItems> directOrderList = new ArrayList<>();
+    directOrderList.add(tempItem);
+
+    model.addAttribute("member", member);
+    model.addAttribute("cartItems", directOrderList);
+    model.addAttribute("isSingleOrder", true); // 기존 로직 재활용
+    model.addAttribute("isDirectOrder", true); // ✅ 직접 주문 여부 전달
+
+    return "order/orderCustomerInfo";
+  }
+
+  // 상세페이지에서 주문처리
+  @PostMapping("/direct")
+  public String placeDirectOrder(@RequestParam("productId") String productId,
+                                 @RequestParam("quantity") int quantity) {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login";
+    }
+
+    Product product = productService.getProductById(productId);
+    if (product == null || quantity <= 0) {
+      return "redirect:/main";
+    }
+
+    System.out.println("[POST /order/direct] 직접 주문 실행 - productId: " + productId + ", quantity: " + quantity);
+    orderService.placeSingleOrder(member, product, quantity);
+
+    return "redirect:/main";
+  }
+
 }
