@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#totalPrice").textContent = totalPrice.toLocaleString();
     }
 
-
+    // 개수 감소 메서드
     function decreaseValue() {
         let input = document.querySelector("#quantityInput");
         let value = parseInt(input.value);
@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // 개수 증가 메서드
     function increaseValue() {
         let input = document.querySelector("#quantityInput");
         input.value = parseInt(input.value) + 1;
@@ -90,19 +91,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 👉 직접 주문 버튼 클릭 시 동작
     function submitDirectOrder() {
-        let quantity = document.querySelector("#quantityInput").value;
-        let quantityField = document.querySelector("#directOrderQuantity");
+        const form = document.querySelector("#cartForm");
+        const quantityInput = document.querySelector("#quantityInput");
+        const productIdInput = form.querySelector("input[name='productId']");
+        const quantity = quantityInput?.value;
 
-        // 유효성 검사
         if (!quantity || parseInt(quantity) < 1) {
             alert("수량을 1 이상 입력해주세요.");
             return;
         }
 
-        quantityField.value = quantity;
+        // 폼 action, method 조정
+        form.action = "/order/direct";
+        form.method = "get";
 
-        // 폼 제출
-        document.querySelector("#directOrderForm").submit();
+        // 숨겨진 필드에 directOrder 표시 (선택사항)
+        document.querySelector("#isDirectOrder").value = "true";
+
+        // submit 실행
+        form.submit();
     }
 
     // 전역 함수로 등록 (HTML inline onclick에서 호출 가능하게)

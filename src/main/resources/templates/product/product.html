@@ -110,12 +110,9 @@
             </div>
             <div sec:authorize="isAuthenticated()" class="d-flex justify-content-between m-0">
               <button class="w-45 btn-cart rounded">장바구니</button>
-              <form id="directOrderForm" method="get" action="/order/direct">
-                <input type="hidden" name="productId" th:value="${product.productId}">
-                <input type="hidden" name="quantity" id="directOrderQuantity" value="1">
-                <button type="button" class="w-45 btn-buy rounded" onclick="submitDirectOrder()">구매하기</button>
-              </form>
+              <button type="button" class="w-45 btn-buy rounded" onclick="submitDirectOrder()">구매하기</button>
             </div>
+            <input type="hidden" name="isDirectOrder" id="isDirectOrder" value="false">
           </div>
         </form>
       </div>
