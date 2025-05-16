@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // 폼 action, method 조정
-        form.action = "/order/direct";
+        form.action = "/CampingMarket/order/direct";
         form.method = "get";
 
         // 숨겨진 필드에 directOrder 표시 (선택사항)

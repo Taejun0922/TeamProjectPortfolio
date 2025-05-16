@@ -1,0 +1,105 @@
+<!-- fragments/orderFormCommon.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="content">
+  <div class="row">
+    <!-- 주문자 정보 -->
+    <div class="col-md-6 mb-4 d-flex justify-content-center">
+      <div class="shadow p-4 bg-body-tertiary rounded" style="width: 90%;">
+        <h4 class="fw-bold text-center mb-4">주문자 정보</h4>
+
+        <div class="mb-3 text-center">
+          <label class="fw-bold d-block">ID</label>
+          <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+             th:text="${member.memberId}"></p>
+        </div>
+
+        <div class="mb-3 text-center">
+          <label class="fw-bold d-block">이름</label>
+          <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+             th:text="${member.memberName}"></p>
+        </div>
+
+        <div class="mb-3 text-center">
+          <label class="fw-bold d-block">연락처</label>
+          <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+             th:text="${member.memberPhone}"></p>
+        </div>
+
+        <div class="mb-3 text-center">
+          <label class="fw-bold d-block">주소</label>
+          <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+             th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[0] : 'Guest'}"></p>
+        </div>
+
+        <div class="mb-3 text-center">
+          <label class="fw-bold d-block">상세 주소</label>
+          <p class="form-control-plaintext d-inline-block border bg-light rounded py-2 px-3"
+             th:text="${member != null ? #strings.arraySplit(member.memberAddress, ',')[1] : 'Guest'}"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주문 상품 정보 -->
+    <div class="col-md-6 mb-4">
+      <div class="shadow p-4 bg-body-tertiary rounded h-100 position-relative">
+        <h4 class="fw-bold text-center mb-4">주문 상품 정보</h4>
+
+        <ul class="list-group list-group-flush mb-5">
+          <li class="list-group-item" th:each="item : ${cartItems}">
+            <div class="row align-items-center">
+              <div class="col-2 text-center">
+                <img th:src="|/CampingMarket/images/IMG_${item.product.productId}.jpg|"
+                     alt="상품 이미지"
+                     class="img-fluid rounded"
+                     style="max-width: 80px; height: auto;">
+              </div>
+              <div class="col-4">
+                <p class="mb-1">상품명: [[${item.product.productName}]]</p>
+              </div>
+              <div class="col-2 text-center">
+                <p class="mb-1">수량: [[${item.quantity}]]</p>
+              </div>
+              <div class="col-3 text-end">
+                <p class="mb-1">가격: [[${#numbers.formatInteger(item.product.productPrice, 3, 'COMMA')}]]원</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- 총 결제 금액 -->
+        <div class="position-absolute bottom-0 end-0 mb-3 me-3">
+          <th:block th:if="${cartItems != null and cartItems.size() > 1}">
+            <h5>총 결제 금액:
+              <span class="fw-bold text-danger">
+                  [[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원
+                </span>
+            </h5>
+          </th:block>
+          <th:block th:if="${cartItems != null and cartItems.size() == 1}">
+            <h5>총 결제 금액:
+              <span class="fw-bold text-danger">
+                  [[${#numbers.formatInteger(cartItems[0].product.productPrice * cartItems[0].quantity, 3, 'COMMA')}]]원
+                </span>
+            </h5>
+          </th:block>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 수량 및 제품 ID hidden input -->
+  <th:block th:if="${orderType == 'single' or orderType == 'direct'}">
+    <input type="hidden" name="quantity" th:value="${cartItems[0].quantity}" />
+    <input type="hidden" name="productId" th:value="${productId}" />
+  </th:block>
+
+  <!-- 결제 버튼 -->
+  <div class="text-center my-3">
+    <button type="submit" class="btn btn-dark me-2" id="purchaseBtn">결제하기</button>
+    <button type="button" class="btn btn-outline-danger">취소</button>
+  </div>
+</th:block>
+</body>
+</html>

@@ -48,6 +48,7 @@ public class OrderController {
       List<CartItems> cartItems = cartItemService.getCartItems(cart.getCartId());
       model.addAttribute("cart", cart);
       model.addAttribute("cartItems", cartItems);
+      model.addAttribute("orderType", "cart"); // 플래그 추가
     }
 
     return "order/orderCustomerInfo";
@@ -120,7 +121,7 @@ public class OrderController {
 
     model.addAttribute("member", member);
     model.addAttribute("cartItems", singleItemList);
-    model.addAttribute("isSingleOrder", true); // 👉 개별 주문용
+    model.addAttribute("orderType", "single"); // 플래그 추가
     model.addAttribute("productId", productId); // 👉 뷰에서 form action용
 
     return "order/orderCustomerInfo";
@@ -179,8 +180,8 @@ public class OrderController {
 
     model.addAttribute("member", member);
     model.addAttribute("cartItems", directOrderList);
-    model.addAttribute("isSingleOrder", true); // 기존 로직 재활용
-    model.addAttribute("isDirectOrder", true); // ✅ 직접 주문 여부 전달
+    model.addAttribute("orderType", "direct"); // ← 플래그 추가
+    model.addAttribute("productId", productId); // ← 뷰에서 POST에 필요
 
     return "order/orderCustomerInfo";
   }
