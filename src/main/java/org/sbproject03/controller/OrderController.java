@@ -155,6 +155,63 @@ public class OrderController {
     return "redirect:/main";
   }
 
+  // 카트에서 선택상품 주문페이지 이동
+  @PostMapping("/selected")
+  public String orderSelectedProducts(@RequestParam List<String> productIds,
+                                      @RequestParam List<Integer> quantities,
+                                      Model model, HttpSession session) {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login"; // 로그인 안 되어 있으면 로그인 페이지로 리다이렉트
+    }
+
+    List<CartItems> selectedItems = new ArrayList<>();
+    for (int i = 0; i < productIds.size(); i++) {
+      String productId = productIds.get(i);
+      int quantity = quantities.get(i);
+
+      Product product = productService.getProductById(productId);
+      if (product != null && quantity > 0) {
+        CartItems cartItem = new CartItems();
+        cartItem.setProduct(product);
+        cartItem.setQuantity(quantity);
+        selectedItems.add(cartItem);
+      }
+    }
+
+    model.addAttribute("member", member);
+    model.addAttribute("cartItems", selectedItems);
+    model.addAttribute("orderType", "selected"); // 주문 유형 플래그 설정
+
+    return "order/orderCustomerInfo"; // 선택된 상품들을 포함한 주문 페이지로 이동
+  }
+
+  // 카트에서 선택한 주문 처리
+  @PostMapping("/processSelectedOrder")
+  public String orderSelectedProducts(@RequestParam("productIds") List<String> productIds,
+                                      @RequestParam("quantities") List<Integer> quantities) {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) return "redirect:/login";
+
+    for (int i = 0; i < productIds.size(); i++) {
+      String productId = productIds.get(i);
+      int quantity = quantities.get(i);
+
+      Product product = productService.getProductById(productId);
+      if (product != null && quantity > 0) {
+        orderService.placeSingleOrder(member, product, quantity);
+
+        Object cartIdObj = session.getAttribute("cartId");
+        if (cartIdObj != null) {
+          Long cartId = Long.parseLong(cartIdObj.toString());
+          cartItemService.deleteByCartIdAndProductId(cartId, productId);
+        }
+      }
+    }
+
+    return "redirect:/main";
+  }
+
   // 상세페이지에서 주문페이지로 이동
   @GetMapping("/direct")
   public String directOrderPage(@RequestParam("productId") String productId,

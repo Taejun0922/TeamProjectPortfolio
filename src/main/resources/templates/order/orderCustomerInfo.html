@@ -30,7 +30,7 @@
     </div>
     <!-- 중단 : 고객 정보 -->
     <div class="d-flex justify-content-center">
-      <!-- 단일 주문 -->
+      <!-- 장바구니에서 단일 주문 -->
       <form th:if="${orderType == 'single'}"
             th:action="@{'/order/' + ${productId}}"
             method="post"
@@ -39,7 +39,7 @@
         <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
       </form>
 
-      <!-- 장바구니 주문 -->
+      <!-- 장바구니 전체 주문 -->
       <form th:if="${orderType == 'cart'}"
             th:action="@{/order}"
             method="post"
@@ -57,6 +57,15 @@
         <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
       </form>
     </div>
+
+    <!-- 카트에서 선택한 상품 주문 -->
+    <form th:if="${orderType == 'selected'}"
+          th:action="@{/order/processSelectedOrder}"
+          method="post"
+          class="w-75"
+          onsubmit="return showSuccessAlert()">
+      <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
+    </form>
 
     <!-- 푸터 -->
     <th:block th:replace="~{/module/bottom.html}"></th:block>

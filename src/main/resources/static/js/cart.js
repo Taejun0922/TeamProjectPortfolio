@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // 페이지 로드 시 금액 포매팅 함수
+  // 금액 포매팅 함수
   function formatPrice() {
     const priceElements = document.querySelectorAll('.product-total');
     priceElements.forEach(priceElement => {
@@ -18,10 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 페이지 로드시 금액 포매팅 실행
+  // 금액 포매팅 실행
   formatPrice();
 
-  // 수량 변경 버튼 처리
+  // 수량 버튼 처리
   document.querySelectorAll('.increase-btn, .decrease-btn').forEach(btn => {
     btn.addEventListener('click', function () {
       const productId = this.getAttribute('data-product-id');
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // ✅ 전체 선택 체크박스 기능 추가
+  // 전체 선택 체크박스
   const checkAllBox = document.querySelector('.cartChkTot');
   const checkboxes = document.querySelectorAll('.cartChkOne');
 
@@ -91,4 +91,43 @@ document.addEventListener("DOMContentLoaded", function () {
       checkAllBox.checked = allChecked;
     });
   });
+
+  // ✅ 선택 주문하기 버튼 처리
+    const selectedOrderBtn = document.getElementById('btn-selected-order');
+    if (selectedOrderBtn) {
+      selectedOrderBtn.addEventListener('click', function () {
+        const selectedForm = document.getElementById('selected-order-form');
+        selectedForm.innerHTML = ''; // 기존 데이터 제거
+
+        const selectedItems = document.querySelectorAll('.cartChkOne:checked');
+
+        if (selectedItems.length === 0) {
+          alert('선택된 상품이 없습니다.');
+          return;
+        }
+
+        selectedItems.forEach(chk => {
+          const row = chk.closest('tr');
+          const productId = row.getAttribute('data-product-id');
+          const quantity = row.querySelector('.quantity-input').value;
+
+          // hidden input 생성
+          const idInput = document.createElement('input');
+          idInput.type = 'hidden';
+          idInput.name = 'productIds';
+          idInput.value = productId;
+          selectedForm.appendChild(idInput);
+
+          const qtyInput = document.createElement('input');
+          qtyInput.type = 'hidden';
+          qtyInput.name = 'quantities';
+          qtyInput.value = quantity;
+          selectedForm.appendChild(qtyInput);
+        });
+
+        selectedForm.action = '/CampingMarket/order/selected';
+        selectedForm.method = 'POST';
+        selectedForm.submit();
+      });
+    }
 });
