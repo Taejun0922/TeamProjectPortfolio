@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+
   // 금액 포매팅 함수
   function formatPrice() {
     const priceElements = document.querySelectorAll('.product-total');
@@ -92,42 +93,57 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // ✅ 선택 주문하기 버튼 처리
-    const selectedOrderBtn = document.getElementById('btn-selected-order');
-    if (selectedOrderBtn) {
-      selectedOrderBtn.addEventListener('click', function () {
-        const selectedForm = document.getElementById('selected-order-form');
-        selectedForm.innerHTML = ''; // 기존 데이터 제거
+  // 선택 주문하기 버튼 처리
+  const selectedOrderBtn = document.getElementById('btn-selected-order');
+  if (selectedOrderBtn) {
+    selectedOrderBtn.addEventListener('click', function () {
+      const selectedForm = document.getElementById('selected-order-form');
+      selectedForm.innerHTML = ''; // 기존 데이터 제거
 
-        const selectedItems = document.querySelectorAll('.cartChkOne:checked');
+      const selectedItems = document.querySelectorAll('.cartChkOne:checked');
 
-        if (selectedItems.length === 0) {
-          alert('선택된 상품이 없습니다.');
-          return;
-        }
+      if (selectedItems.length === 0) {
+        alert('선택된 상품이 없습니다.');
+        return;
+      }
 
-        selectedItems.forEach(chk => {
-          const row = chk.closest('tr');
-          const productId = row.getAttribute('data-product-id');
-          const quantity = row.querySelector('.quantity-input').value;
+      let totalSelectedPrice = 0;
 
-          // hidden input 생성
-          const idInput = document.createElement('input');
-          idInput.type = 'hidden';
-          idInput.name = 'productIds';
-          idInput.value = productId;
-          selectedForm.appendChild(idInput);
+      selectedItems.forEach(chk => {
+        const row = chk.closest('tr');
+        const productId = row.getAttribute('data-product-id');
+        const quantity = row.querySelector('.quantity-input').value;
 
-          const qtyInput = document.createElement('input');
-          qtyInput.type = 'hidden';
-          qtyInput.name = 'quantities';
-          qtyInput.value = quantity;
-          selectedForm.appendChild(qtyInput);
-        });
+        // 상품 총 가격 추출 (product-total에 이미 수량 포함된 가격이 있음)
+        const totalPriceText = row.querySelector('.product-total').textContent;
+        const itemTotalPrice = parseInt(totalPriceText.replace(/[^0-9]/g, '')) || 0;
+        totalSelectedPrice += itemTotalPrice;
 
-        selectedForm.action = '/CampingMarket/order/selected';
-        selectedForm.method = 'POST';
-        selectedForm.submit();
+        // hidden input 생성
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'productIds';
+        idInput.value = productId;
+        selectedForm.appendChild(idInput);
+
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'hidden';
+        qtyInput.name = 'quantities';
+        qtyInput.value = quantity;
+        selectedForm.appendChild(qtyInput);
       });
-    }
+
+      // 총 가격 hidden input 추가
+      const totalInput = document.createElement('input');
+      totalInput.type = 'hidden';
+      totalInput.name = 'totalPrice';
+      totalInput.value = totalSelectedPrice;
+      selectedForm.appendChild(totalInput);
+
+      // 선택된 상품들을 주문 페이지로 전송
+      selectedForm.action = '/CampingMarket/order/selected';
+      selectedForm.method = 'POST';
+      selectedForm.submit();
+    });
+  }
 });

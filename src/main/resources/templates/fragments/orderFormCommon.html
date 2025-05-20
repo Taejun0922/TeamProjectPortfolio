@@ -70,18 +70,21 @@
 
         <!-- 총 결제 금액 -->
         <div class="position-absolute bottom-0 end-0 mb-3 me-3">
-          <th:block th:if="${cartItems != null and cartItems.size() > 1}">
+          <th:block th:if="${orderType == 'cart'}">
             <h5>총 결제 금액:
-              <span class="fw-bold text-danger">
-                  [[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원
-                </span>
+              <span class="fw-bold text-danger">[[${#numbers.formatInteger(cart.totalPrice, 3, 'COMMA')}]]원</span>
             </h5>
           </th:block>
-          <th:block th:if="${cartItems != null and cartItems.size() == 1}">
+
+          <th:block th:if="${orderType == 'single' or orderType == 'direct'}">
             <h5>총 결제 금액:
-              <span class="fw-bold text-danger">
-                  [[${#numbers.formatInteger(cartItems[0].product.productPrice * cartItems[0].quantity, 3, 'COMMA')}]]원
-                </span>
+              <span class="fw-bold text-danger">[[${#numbers.formatInteger(cartItems[0].product.productPrice * cartItems[0].quantity, 3, 'COMMA')}]]원</span>
+            </h5>
+          </th:block>
+
+          <th:block th:if="${orderType == 'selected'}">
+            <h5>총 결제 금액:
+              <span class="fw-bold text-danger">[[${#numbers.formatInteger(totalPrice, 3, 'COMMA')}]]원</span>
             </h5>
           </th:block>
         </div>
