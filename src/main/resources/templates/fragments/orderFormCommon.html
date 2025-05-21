@@ -46,8 +46,8 @@
       <div class="shadow p-4 bg-body-tertiary rounded h-100 position-relative">
         <h4 class="fw-bold text-center mb-4">주문 상품 정보</h4>
 
-        <ul class="list-group list-group-flush mb-5">
-          <li class="list-group-item" th:each="item : ${cartItems}">
+        <ul class="list-group list-group-flush mb-5" id="orderItems">
+          <li class="list-group-item" th:each="item : ${cartItems}" th:attr="data-price=${item.product.productPrice * item.quantity}">
             <div class="row align-items-center">
               <div class="col-2 text-center">
                 <img th:src="|/CampingMarket/images/IMG_${item.product.productId}.jpg|"
@@ -84,7 +84,7 @@
 
           <th:block th:if="${orderType == 'selected'}">
             <h5>총 결제 금액:
-              <span class="fw-bold text-danger">[[${#numbers.formatInteger(totalPrice, 3, 'COMMA')}]]원</span>
+              <span class="fw-bold text-danger" id="totalPriceText"></span>
             </h5>
           </th:block>
         </div>
@@ -96,6 +96,12 @@
   <th:block th:if="${orderType == 'single' or orderType == 'direct'}">
     <input type="hidden" name="quantity" th:value="${cartItems[0].quantity}" />
     <input type="hidden" name="productId" th:value="${productId}" />
+  </th:block>
+  <th:block th:if="${orderType == 'selected'}">
+    <th:block th:each="item, iterStat : ${cartItems}">
+      <input type="hidden" name="productIds" th:value="${item.product.productId}" />
+      <input type="hidden" name="quantities" th:value="${item.quantity}" />
+    </th:block>
   </th:block>
 
   <!-- 결제 버튼 -->

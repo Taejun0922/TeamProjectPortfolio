@@ -10,20 +10,25 @@ function showSuccessAlert() {
   return true; // 폼 제출 허용
 }
 
+// 총 결제 금액 계산 및 표시
+function calculateTotalPrice() {
+  const items = document.querySelectorAll("#orderItems .list-group-item");
+  let total = 0;
 
-//fetch('/order', {
-//  method: 'POST',
-//  body: new FormData(event.target)
-//})
-//.then(response => {
-//  if (response.ok) {
-//    alert('주문이 완료되었습니다.');
-//    window.location.href = '/CampingMarket/main'; // 직접 리다이렉트
-//  } else {
-//    alert('주문 처리 중 오류가 발생했습니다.');
-//  }
-//})
-//.catch(err => {
-//  console.error(err);
-//  alert('서버 오류가 발생했습니다.');
-//});
+  items.forEach(item => {
+    const price = parseInt(item.dataset.price, 10);
+    if (!isNaN(price)) {
+      total += price;
+    }
+  });
+
+  const totalPriceText = document.getElementById("totalPriceText");
+  if (totalPriceText) {
+    totalPriceText.textContent = `${total.toLocaleString('ko-KR')}원`;
+  }
+}
+
+// 페이지 로드 시 계산 실행
+document.addEventListener("DOMContentLoaded", function () {
+  calculateTotalPrice();
+});

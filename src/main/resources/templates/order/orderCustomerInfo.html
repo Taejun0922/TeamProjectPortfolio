@@ -34,7 +34,7 @@
       <form th:if="${orderType == 'single'}"
             th:action="@{'/order/' + ${productId}}"
             method="post"
-            class="w-75"
+            class="w-75 mx-auto"
             onsubmit="return showSuccessAlert()">
         <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
       </form>
@@ -43,7 +43,7 @@
       <form th:if="${orderType == 'cart'}"
             th:action="@{/order}"
             method="post"
-            class="w-75"
+            class="w-75 mx-auto"
             onsubmit="return showSuccessAlert()">
         <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
       </form>
@@ -52,7 +52,7 @@
       <form th:if="${orderType == 'direct'}"
             th:action="@{/order/direct}"
             method="post"
-            class="w-75"
+            class="w-75 mx-auto"
             onsubmit="return showSuccessAlert()">
         <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
       </form>
@@ -62,7 +62,7 @@
     <form th:if="${orderType == 'selected'}"
           th:action="@{/order/processSelectedOrder}"
           method="post"
-          class="w-75"
+          class="w-75 mx-auto"
           onsubmit="return showSuccessAlert()">
       <div th:replace="~{/fragments/orderFormCommon :: content}"></div>
     </form>
@@ -70,5 +70,6 @@
     <!-- 푸터 -->
     <th:block th:replace="~{/module/bottom.html}"></th:block>
   </div>
+</div>
 </body>
 </html>

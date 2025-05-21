@@ -107,17 +107,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      let totalSelectedPrice = 0;
-
       selectedItems.forEach(chk => {
         const row = chk.closest('tr');
         const productId = row.getAttribute('data-product-id');
         const quantity = row.querySelector('.quantity-input').value;
-
-        // 상품 총 가격 추출 (product-total에 이미 수량 포함된 가격이 있음)
-        const totalPriceText = row.querySelector('.product-total').textContent;
-        const itemTotalPrice = parseInt(totalPriceText.replace(/[^0-9]/g, '')) || 0;
-        totalSelectedPrice += itemTotalPrice;
 
         // hidden input 생성
         const idInput = document.createElement('input');
@@ -133,14 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
         selectedForm.appendChild(qtyInput);
       });
 
-      // 총 가격 hidden input 추가
-      const totalInput = document.createElement('input');
-      totalInput.type = 'hidden';
-      totalInput.name = 'totalPrice';
-      totalInput.value = totalSelectedPrice;
-      selectedForm.appendChild(totalInput);
-
-      // 선택된 상품들을 주문 페이지로 전송
+      // 주문 페이지로 전송
       selectedForm.action = '/CampingMarket/order/selected';
       selectedForm.method = 'POST';
       selectedForm.submit();
