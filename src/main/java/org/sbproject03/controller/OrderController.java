@@ -162,7 +162,15 @@ public class OrderController {
                                       Model model, HttpSession session) {
     Member member = (Member) session.getAttribute("userLoginInfo");
     if (member == null) {
-      return "redirect:/login"; // 로그인 안 되어 있으면 로그인 페이지로 리다이렉트
+      return "redirect:/login";
+    }
+
+    // ✅ cartId 가져와서 세션에 저장
+    List<Cart> carts = cartService.getCartsByMemberId(member.getId());
+    if (!carts.isEmpty()) {
+      Cart cart = carts.get(0);
+      session.setAttribute("cartId", cart.getCartId());
+      System.out.println("[/order/selected] 세션에 cartId 저장됨: " + cart.getCartId());
     }
 
     List<CartItems> selectedItems = new ArrayList<>();
@@ -181,9 +189,9 @@ public class OrderController {
 
     model.addAttribute("member", member);
     model.addAttribute("cartItems", selectedItems);
-    model.addAttribute("orderType", "selected"); // 주문 유형 플래그 설정
+    model.addAttribute("orderType", "selected");
 
-    return "order/orderCustomerInfo"; // 선택된 상품들을 포함한 주문 페이지로 이동
+    return "order/orderCustomerInfo";
   }
 
   // 카트에서 선택한 주문 처리
@@ -191,21 +199,32 @@ public class OrderController {
   public String orderSelectedProducts(@RequestParam("productIds") List<String> productIds,
                                       @RequestParam("quantities") List<Integer> quantities) {
     Member member = (Member) session.getAttribute("userLoginInfo");
-    if (member == null) return "redirect:/login";
+    if (member == null) {
+      return "redirect:/login";
+    }
 
+    // ✅ cartId 세션에서 꺼내기
+    Object cartIdObj = session.getAttribute("cartId");
+    if (cartIdObj == null) {
+      System.out.println("[POST /order/processSelectedOrder] 세션에 cartId 없음. 장바구니로 리다이렉트");
+      return "redirect:/cart";
+    }
+
+    Long cartId = Long.parseLong(cartIdObj.toString());
+
+    // ✅ 각 상품 주문 및 삭제 처리
     for (int i = 0; i < productIds.size(); i++) {
       String productId = productIds.get(i);
       int quantity = quantities.get(i);
 
       Product product = productService.getProductById(productId);
       if (product != null && quantity > 0) {
+        // 주문 실행
         orderService.placeSingleOrder(member, product, quantity);
 
-        Object cartIdObj = session.getAttribute("cartId");
-        if (cartIdObj != null) {
-          Long cartId = Long.parseLong(cartIdObj.toString());
-          cartItemService.deleteByCartIdAndProductId(cartId, productId);
-        }
+        // ✅ 주문 후 카트에서 해당 상품 삭제
+        System.out.println("[DELETE] 주문 완료 후 카트에서 상품 삭제 - cartId: " + cartId + ", productId: " + productId);
+        cartItemService.deleteByCartIdAndProductId(cartId, productId);
       }
     }
 

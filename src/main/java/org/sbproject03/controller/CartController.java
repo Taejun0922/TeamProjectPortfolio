@@ -35,21 +35,19 @@ public class CartController {
   @GetMapping
   public ModelAndView requestCartId(ModelAndView mav) {
     Cart cart = getCart(); // 카트 조회 메서드
-    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
-    List<CartItems> cartItems = cartItemService.getCartItems(cartId); // 장바구니 항목 조회
+    Long cartId = cart.getCartId();
 
-    // 로그 출력
-    System.out.println("===== 카트 정보 =====");
-    System.out.println("cartId: " + cartId);
-    System.out.println("totalPrice: " + cart.getTotalPrice());
-    System.out.println("cart 객체: " + cart);
-    System.out.println("=====================");
+    // 🔥 총 가격 최신화
+    updateTotalPrice(cartId);
+
+    List<CartItems> cartItems = cartItemService.getCartItems(cartId);
 
     mav.addObject("cart", cart);
     mav.addObject("cartItems", cartItems);
     mav.setViewName("cart/cart");
     return mav;
   }
+
 
 
   // 장바구니 상품 추가
