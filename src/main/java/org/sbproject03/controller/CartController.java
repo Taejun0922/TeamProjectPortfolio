@@ -11,6 +11,7 @@ import org.sbproject03.service.CartItemService;
 import org.sbproject03.service.CartService;
 import org.sbproject03.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +49,6 @@ public class CartController {
     return mav;
   }
 
-
-
   // 장바구니 상품 추가
   @PostMapping
   public String addCartItem(@RequestParam("productId") String productId, @RequestParam("quantity") int quantity) {
@@ -80,7 +79,7 @@ public class CartController {
     return "redirect:/cart";
   }
 
-  // 장바구니 상품 삭제
+  // 장바구니 상품 한개 삭제
   @DeleteMapping("/{productId}")
   public String deleteCartItem(@PathVariable String productId) {
     Cart cart = getCart();
@@ -89,6 +88,16 @@ public class CartController {
 
     updateTotalPrice(cartId);
     return "redirect:/cart";
+  }
+
+  // 전체 장바구니 상품 삭제
+  @DeleteMapping("/all")
+  @ResponseBody
+  public ResponseEntity<Void> deleteAllCartItems() {
+    Cart cart = getCart();
+    cartItemService.deleteAllByCartId(cart.getCartId());
+    updateTotalPrice(cart.getCartId());
+    return ResponseEntity.noContent().build(); // 204 No Content
   }
 
   // 카트 반환 메서드 - memberId로 카트를 찾도록 변경

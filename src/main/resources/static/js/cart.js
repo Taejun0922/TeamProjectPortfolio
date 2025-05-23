@@ -132,4 +132,30 @@ document.addEventListener("DOMContentLoaded", function () {
       selectedForm.submit();
     });
   }
+
+  // 전체 삭제 버튼 처리
+  const allDeleteBtn = document.getElementById('btn-all-delete');
+  if (allDeleteBtn) {
+    allDeleteBtn.addEventListener('click', function () {
+      if (!confirm('정말 전체 삭제하시겠습니까?')) return;
+
+      fetch('/CampingMarket/cart/all', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          if (res.ok) {
+            window.location.reload(); // 삭제 후 장바구니 새로고침
+          } else {
+            alert('전체 삭제에 실패했습니다.');
+          }
+        })
+        .catch(err => {
+          console.error('전체 삭제 오류:', err);
+          alert('서버와의 통신 중 문제가 발생했습니다.');
+        });
+    });
+  }
 });
