@@ -158,4 +158,44 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   }
+
+  // 선택 삭제 버튼 처리
+  const selectedDeleteBtn = document.getElementById('btn-selected-delete');
+  if (selectedDeleteBtn) {
+    selectedDeleteBtn.addEventListener('click', function () {
+      const selectedItems = document.querySelectorAll('.cartChkOne:checked');
+
+      if (selectedItems.length === 0) {
+        alert('삭제할 상품을 선택하세요.');
+        return;
+      }
+
+      if (!confirm('선택한 상품을 삭제하시겠습니까?')) return;
+
+      // 선택된 productId 수집
+      const productIds = Array.from(selectedItems).map(chk => {
+        const row = chk.closest('tr');
+        return row.getAttribute('data-product-id');
+      });
+
+      fetch('/CampingMarket/cart/selected', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productIds: productIds })
+      })
+      .then(res => {
+        if (res.ok) {
+          window.location.reload(); // 삭제 후 새로고침
+        } else {
+          alert('선택 삭제에 실패했습니다.');
+        }
+      })
+      .catch(err => {
+        console.error('선택 삭제 오류:', err);
+        alert('서버와의 통신 중 문제가 발생했습니다.');
+      });
+    });
+  }
 });

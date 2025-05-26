@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/cart")
@@ -51,9 +52,13 @@ public class CartController {
 
   // 장바구니 상품 추가
   @PostMapping
-  public String addCartItem(@RequestParam("productId") String productId, @RequestParam("quantity") int quantity) {
+  @ResponseBody
+  public ResponseEntity<String> addCartItem(
+          @RequestParam("productId") String productId,
+          @RequestParam("quantity") int quantity) {
+
     Cart cart = getCart();
-    Long cartId = cart.getCartId(); // cartId는 Long 타입으로 수정
+    Long cartId = cart.getCartId();
 
     Product product = productService.getProductById(productId);
     List<CartItems> cartItems = cartItemService.getCartItems(cartId);
@@ -68,15 +73,14 @@ public class CartController {
       }
     }
 
-    // 장바구니가 없을 때
     if (!found) {
-      CartItems cartItem = new CartItems(cart, product, quantity);
-      cartItems.add(cartItem);
-      cartItemService.save(cartItem);
+      CartItems newItem = new CartItems(cart, product, quantity);
+      cartItemService.save(newItem);
     }
 
     updateTotalPrice(cartId);
-    return "redirect:/cart";
+
+    return ResponseEntity.ok("장바구니에 추가되었습니다");
   }
 
   // 장바구니 상품 한개 삭제
@@ -121,6 +125,28 @@ public class CartController {
     // 첫 번째 카트를 가져옴 (필요에 따라 여러 카트 중 하나를 선택할 수 있음)
     return carts.get(0);
   }
+
+  // 선택된 장바구니 항목 삭제
+  @DeleteMapping("/selected")
+  @ResponseBody
+  public ResponseEntity<String> deleteSelectedItems(@RequestBody Map<String, List<String>> payload) {
+    Cart cart = getCart();
+    Long cartId = cart.getCartId();
+
+    List<String> productIds = payload.get("productIds");
+
+    if (productIds == null || productIds.isEmpty()) {
+      return ResponseEntity.badRequest().body("삭제할 상품이 없습니다.");
+    }
+
+    for (String productId : productIds) {
+      cartItemService.deleteCartItem(productId); // 이미 존재하는 개별 삭제 로직 재사용
+    }
+
+    updateTotalPrice(cartId);
+    return ResponseEntity.ok("선택된 상품 삭제 완료");
+  }
+
 
   // 카트 상품가격 업데이트 메서드 (매핑 X, 호출용)
   public void updateTotalPrice(Long cartId) { // cartId를 Long 타입으로 수정
