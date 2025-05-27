@@ -8,7 +8,7 @@
 <div class="my-container">
     <header>
         <!-- 로그인 실패 메시지 -->
-        <div th:if="${error}" class="toast" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
+        <div th:if="${error}" id="loginErrorToast" class="toast toast-login-error" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
             <div class="toast-header">
                 <strong class="mr-auto text-danger">로그인 실패</strong>
             </div>
@@ -19,7 +19,8 @@
 
         <!-- 장바구니 추가 토스트 메시지 -->
         <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999">
-            <div id="cartToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div id="cartToast" class="toast align-items-center text-white bg-primary border-0"
+                 role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         🛒 장바구니에 추가되었습니다!

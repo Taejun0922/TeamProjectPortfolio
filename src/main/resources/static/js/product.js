@@ -81,10 +81,61 @@ document.addEventListener("DOMContentLoaded", () => {
     // 수동으로 수량을 입력했을 때도 가격 업데이트
     document.querySelector("#quantityInput").addEventListener("input", updateTotalPrice);
 
-    document.querySelector("#cartForm").addEventListener("submit", (event) => {
-        let quantity = document.querySelector("#quantityInput").value;
-        console.log("장바구니 추가, 상품 수량:", quantity);
+    // 장바구니 토스트를 수동으로 제어할 수 있게 함수 등록
+    window.showCartToast = function () {
+        const toastEl = document.getElementById('cartToast');
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 2000
+            });
+            toast.show();
+        }
+    };
+
+    // 카트로 데이터 보내기
+    document.querySelector("#cartForm").addEventListener("submit", async (event) => {
+        event.preventDefault(); // 페이지 이동 막기
+
+        const form = document.querySelector("#cartForm");
+        const productId = form.querySelector("input[name='productId']").value;
+        const quantity = form.querySelector("#quantityInput").value;
+
+        // 유효성 검사
+        if (!quantity || parseInt(quantity) < 1) {
+            alert("수량을 1 이상 입력해주세요.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/CampingMarket/cart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                },
+                body: new URLSearchParams({
+                    productId: productId,
+                    quantity: quantity
+                })
+            });
+
+            const responseText = await response.text();
+
+            if (response.ok) {
+                console.log("서버 응답:", responseText);
+
+                // 장바구니 토스트 메시지 표시
+                if (typeof showCartToast === "function") {
+                    showCartToast();
+                }
+            } else {
+                alert("장바구니 추가 실패: " + responseText);
+            }
+        } catch (error) {
+            console.error("AJAX 요청 중 오류 발생:", error);
+            alert("장바구니 추가 중 오류가 발생했습니다.");
+        }
     });
+
 
     // 페이지 로드 시 초기 총 가격 설정
     updateTotalPrice();

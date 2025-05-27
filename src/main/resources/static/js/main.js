@@ -130,13 +130,12 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = '/CampingMarket/notice/list'; // 이동할 페이지 URL
     });
 
-    // 로그인 실패 메시지
-    var toast = document.querySelector('.toast');
-    if (toast) {
-        var toastInstance = new bootstrap.Toast(toast, {
-            delay: 2000  // 2초 후 자동으로 사라짐
+    // 로그인 실패 메시지 토스트만 자동 실행
+    const loginErrorToast = document.getElementById('loginErrorToast');
+    if (loginErrorToast) {
+        const toastInstance = new bootstrap.Toast(loginErrorToast, {
+            delay: 2000
         });
         toastInstance.show();
     }
-
 });
