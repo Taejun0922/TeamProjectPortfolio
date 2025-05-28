@@ -30,6 +30,48 @@
             </div>
         </div>
 
+        <!-- 회원가입 완료 모달 -->
+        <div class="modal fade" id="signupSuccessModal" tabindex="-1" aria-labelledby="signupSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-success" id="signupSuccessModalLabel">✅ 회원가입 완료</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                    </div>
+                    <div class="modal-body">
+                        🎉 회원가입이 성공적으로 완료되었습니다!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 회원가입 성공 메시지를 위한 히든 코드 -->
+        <input type="hidden" data-success-message th:value="${successMessage}" />
+
+        <!-- 회원 탈퇴 완료 모달 -->
+        <div class="modal fade" id="deleteSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger" id="deleteSuccessModalLabel">👋 회원 탈퇴 완료</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                    </div>
+                    <div class="modal-body">
+                        회원 탈퇴가 정상적으로 처리되었습니다. 그동안 이용해주셔서 감사합니다.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 회원탈퇴 메시지를 위한 히든 코드 -->
+        <input type="hidden" id="deleteSuccessFlag" th:value="${successMessage}" />
+
         <nav class="navbar navbar-light">
             <div class="container d-flex justify-content-end align-items-center">
                 <!-- 가운데: 로고 -->
@@ -48,7 +90,6 @@
                             </button>
                         </div>
                     </form>
-
 
                     <!-- 네비게이션 메뉴 (CART, LOGIN, JOIN) -->
                     <ul class="navbar-nav d-flex flex-row">
@@ -107,10 +148,8 @@
                             <button sec:authorize="isAuthenticated()" class="nav-link btn btn-link openSignup">
                                 <span sec:authentication="name" class="text-primary fw-bold"></span>님
                             </button>
-
                         </li>
                     </ul>
-
 
                     <!-- 배경 오버레이 -->
                     <div id="overlay" class="position-fixed top-0 start-0 w-100 h-100 bg-dark opacity-50 d-none"></div>

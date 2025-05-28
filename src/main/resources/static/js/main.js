@@ -138,4 +138,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         toastInstance.show();
     }
+
+    // 회원가입 성공 메시지가 있으면 모달 띄우기
+    const successMessage = document.querySelector('[data-success-message]');
+    if (successMessage && successMessage.value === '회원가입이 완료되었습니다!') {
+        const signupModal = new bootstrap.Modal(document.getElementById('signupSuccessModal'));
+        signupModal.show();
+    }
+
+    // 회원 탈퇴 성공 메시지 있으면 모달 띄우기
+    const deleteSuccessFlag = document.getElementById("deleteSuccessFlag");
+    if (deleteSuccessFlag && deleteSuccessFlag.value === "회원 탈퇴가 완료되었습니다.") {
+        const deleteSuccessModal = new bootstrap.Modal(document.getElementById('deleteSuccessModal'));
+        deleteSuccessModal.show();
+    }
 });
