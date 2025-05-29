@@ -16,54 +16,55 @@
   <!-- css 경로 설정 -->
   <link th:href="@{/css/top.css}" rel="stylesheet">
   <link th:href="@{/css/main.css}" rel="stylesheet">
+  <link th:href="@{/css/notice.css}" rel="stylesheet">
   <link th:href="@{/css/bottom.css}" rel="stylesheet">
 </head>
 <body>
 <!-- 헤더 -->
 <div id="wrap">
-  <!-- 헤더 -->
+
+  <!-- 상단 모듈 -->
   <th:block th:replace="~{/module/top.html}"></th:block>
 
-  <!-- 중단 -->
-  <div class="container">
-    <div class="row align-items-md-stretch text-center">
-      <div class="notice-name me-auto">
-        <h5 class="fw-bold">공지 & 이벤트</h5>
-      </div>
-    </div>
-<!--    <hr style="width: 1300px; border:0; height:1px; background: #000;">-->
-    <div class="row align-items-md-stretch text-center shadow p-3 mb-5 bg-body-tertiary rounded">
+  <!-- 공지 카드 영역 -->
+  <div class="container-fluid">
+    <div class="notice-card">
       <form action="/CampingMarket/notice/update" method="post" name="updateForm" th:object="${notice}">
-        <input type="hidden" name="id" th:field="*{id}">
-        <div class="d-flex justify-content-center m-3">
-          <label class="col-sm-1 control-label text-start fw-bold">NAME</label>
-          <div class="col-sm-6">
-            <input type="text" name="writerId" class="form-control text-center fw-bold" th:field="*{writerId}" readonly>
-          </div>
+        <input type="hidden" name="id" th:field="*{id}"/>
+
+        <!-- 메타 정보 -->
+        <div class="meta-info">
+          작성자: <span th:text="*{writerId}"></span> ·
+          등록일: <span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></span>
         </div>
-        <div class="d-flex justify-content-center m-3">
-          <label class="col-sm-1 control-label text-start fw-bold">TITLE</label>
-          <div class="col-sm-6">
-            <input type="text" name="noticeSubject" class="form-control text-center fw-bold" th:field="*{noticeSubject}">
-          </div>
+
+        <!-- 제목 -->
+        <div class="notice-title mb-3">
+          <input type="text" th:field="*{noticeSubject}" placeholder="제목 입력" />
         </div>
-        <div class="d-flex justify-content-center m-3">
-          <label class="col-sm-1 control-label text-start fw-bold">CONTENT</label>
-          <div class="col-sm-6">
-            <textarea  name="noticeContent" rows="5" class="form-control text-center" th:field="*{noticeContent}"></textarea>
-          </div>
+
+        <!-- 내용 -->
+        <div class="notice-content mb-4">
+          <textarea th:field="*{noticeContent}" placeholder="내용을 입력하세요"></textarea>
         </div>
-        <div>
-          <span th:if="${modifiedOK == true}">
-            <input type="submit" class="btn btn-outline-success" value="수정">
-            <a th:href="@{|/notice/delete/*{id}|}" class="btn btn-outline-danger" role="button">삭제</a>
-          </span>
-          <a href="/CampingMarket/notice/list" class="btn btn-dark mb-4 mt-4" role="button">목록</a>
+
+        <!-- 버튼 영역 -->
+        <div class="action-buttons">
+          <div>
+            <span th:if="${modifiedOK == true}">
+              <input type="submit" class="btn btn-success" value="수정"/>
+              <a th:href="@{|/notice/delete/*{id}|}" class="btn btn-danger">삭제</a>
+            </span>
+          </div>
+          <div class="ms-auto">
+            <a href="/CampingMarket/notice/list" class="btn btn-outline-secondary">← 목록으로</a>
+          </div>
         </div>
       </form>
     </div>
   </div>
-  <!-- 푸터 -->
+
+  <!-- 하단 모듈 -->
   <th:block th:replace="~{/module/bottom.html}"></th:block>
 </div>
 </body>
