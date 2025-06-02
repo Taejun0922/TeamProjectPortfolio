@@ -32,28 +32,28 @@
             <div class="notice-name me-auto">
                 <h5 class="fw-bold" style="float: left;">공지&이벤트</h5>
             </div>
-            <div class="d-flex col-sm-3 mx-1 mb-1 input input-dark checkbox-notice" style="width: 225px;">
-                <div class="check-category me-2">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="이름">
-                    <label class="form-check-label" for="inlineRadio1">이름</label>
+
+            <form method="get" th:action="@{/notice/search}" class="d-flex align-items-center mb-1 me-2" style="margin-top: -5px;">
+                <div class="d-flex me-2">
+                    <div class="form-check me-2">
+                        <input class="form-check-input" type="radio" name="type" id="radioName" value="writerId" checked>
+                        <label class="form-check-label" for="radioName">이름</label>
+                    </div>
+                    <div class="form-check me-2">
+                        <input class="form-check-input" type="radio" name="type" id="radioTitle" value="noticeSubject">
+                        <label class="form-check-label" for="radioTitle">제목</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" id="radioContent" value="noticeContent">
+                        <label class="form-check-label" for="radioContent">내용</label>
+                    </div>
                 </div>
-                <div class="check-category me-2">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="제목">
-                    <label class="form-check-label" for="inlineRadio1">제목</label>
-                </div>
-                <div class="check-category me-2">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="내용">
-                    <label class="form-check-label" for="inlineRadio1">내용</label>
-                </div>
-            </div>
-            <div class="d-flex col-sm-4" style="width: 260px;">
-                <form class="d-flelx mb-1 me-2">
-                    <input type="search" class="form-control-md search-rev" style="width: 200px;">
-                    <button class="btn btn-outline-secondary search_button" type="submit">
-                        <img th:src="@{/images/icon.png}" alt="Search Icon" class="search_icon">
-                    </button>
-                </form>
-            </div>
+
+                <input type="text" class="form-control me-2" name="keyword" placeholder="검색어 입력" style="width: 200px; height: 38px;">
+                <button class="btn btn-outline-secondary" type="submit" style="height: 38px; display: flex; align-items: center; justify-content: center;">
+                    <img th:src="@{/images/icon.png}" alt="Search Icon" class="search_icon" style="height: 18px;">
+                </button>
+            </form>
         </div>
         <hr style="width: 1300px; border:0; height:1px; background: #000;">
         <div class="table-responsive">

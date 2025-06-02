@@ -45,4 +45,15 @@ public class NoticeService {
     public List<Notice> getRecentNotices() {
         return noticeRepository.findTop4ByOrderByCreatedDateDesc();
     }
+
+    // 게시글 검색
+    public Page<Notice> searchNotices(String type, String keyword, int pageNum, String sortField, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortField).ascending()
+                : Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(pageNum - 1, 10, sort);
+
+        return noticeRepository.searchByType(type, keyword, pageable);
+    }
+
 }

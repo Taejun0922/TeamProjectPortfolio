@@ -152,6 +152,37 @@ public class NoticeController {
 
     }
 
+    // 게시글 검색
+    @GetMapping("/search")
+    public String searchNotices(
+            @RequestParam("type") String type,
+            @RequestParam("keyword") String keyword,
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "sortField", defaultValue = "id") String sortField,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            Model model) {
+
+        Page<Notice> page = noticeService.searchNotices(type, keyword, pageNum, sortField, sortDir);
+        List<Notice> noticeList = page.getContent();
+        int startPage = pageNum - (pageNum - 1) % blockCount;
+
+        model.addAttribute("currentPage", pageNum);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalItems", page.getTotalElements());
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("blockCount", blockCount);
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("searchType", type);
+        model.addAttribute("searchKeyword", keyword);
+
+        // 로그인 또는 비로그인 사용자 처리를 위해 member객체 생성
+        model.addAttribute("newMember", new Member());
+
+        return "notice/noticeList";
+    }
 
 
 
