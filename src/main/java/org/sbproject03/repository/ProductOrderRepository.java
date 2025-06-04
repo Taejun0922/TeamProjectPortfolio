@@ -22,4 +22,7 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
 
     // 특정 cartId로 주문을 조회하는 메서드
     List<ProductOrder> findAllByCartId(Long cartId);
+
+    // 회원별 주문 목록 조회 (최신 순)
+    List<ProductOrder> findByMemberOrderByOrderDateDesc(Member member);
 }

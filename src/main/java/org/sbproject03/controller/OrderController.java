@@ -9,7 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/order")
@@ -281,5 +283,31 @@ public class OrderController {
 
     return "redirect:/main";
   }
+
+  // 주문 내역 페이지 이동
+  // 고객의 주문 내역 페이지
+  @GetMapping("/myOrders")
+  public String viewMyOrders(Model model) {
+    Member member = (Member) session.getAttribute("userLoginInfo");
+    if (member == null) {
+      return "redirect:/login";
+    }
+
+    // 해당 고객의 모든 주문 목록 조회
+    List<ProductOrder> orderList = orderService.getOrdersByMember(member);
+    Map<Long, Integer> orderTotalMap = new HashMap<>();
+
+    for (ProductOrder order : orderList) {
+      int total = order.getItems().stream()
+              .mapToInt(item -> item.getPrice()) // 이미 item.price는 item.quantity * productPrice
+              .sum();
+      orderTotalMap.put(order.getId(), total);
+    }
+
+    model.addAttribute("orderList", orderList);
+    model.addAttribute("orderTotalMap", orderTotalMap);
+    return "order/orders";
+  }
+
 
 }

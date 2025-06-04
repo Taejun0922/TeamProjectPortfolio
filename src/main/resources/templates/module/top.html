@@ -83,17 +83,18 @@
                     <!-- 검색창 -->
                     <form th:action="@{/category/search}" method="get">
                         <div class="d-flex me-3">
-                            <input class="form-control me-2 search_input" type="search" id="inputSearch" name="productName" placeholder="Search..." aria-label="Search" aria-describedby="search-addon">
+                            <input class="form-control mt-1 me-2 search_input" type="search" id="inputSearch" name="productName" placeholder="Search..." aria-label="Search" aria-describedby="search-addon">
                             <!--<a href="javascript:searchBook()" role="button" class="btn btn-outline-primary" id="btnSearch">SEARCH</a>-->
                             <button class="btn btn-outline-secondary" type="submit">
-                                <img th:src="@{/images/icon.png}" class="search_icon">
+                                <img th:src="@{/images/icon.png}" class="search_icon" style="margin-top: -2px;">
                             </button>
                         </div>
                     </form>
 
-                    <!-- 네비게이션 메뉴 (CART, LOGIN, JOIN) -->
+                    <!-- 네비게이션 메뉴 (CART, MY ORDERS, LOGIN, JOIN) -->
                     <ul class="navbar-nav d-flex flex-row">
                         <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/CampingMarket/cart">CART</a></li>
+                        <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/CampingMarket/order/myOrders">MY ORDERS</a></li>
                         <!-- 로그인 버튼 -->
                         <li class="nav-item position-relative">
                             <div class="login-box">

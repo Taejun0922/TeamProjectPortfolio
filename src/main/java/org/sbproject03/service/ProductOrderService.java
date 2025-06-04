@@ -113,4 +113,9 @@ public class ProductOrderService {
       cartItemService.deleteByCartIdAndProductId(cartId, product.getProductId()); // 선택한 상품만 삭제
     }
   }
+
+  // 특정 회원의 주문 내역 조회
+  public List<ProductOrder> getOrdersByMember(Member member) {
+    return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
+  }
 }
