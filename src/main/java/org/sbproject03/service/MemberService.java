@@ -96,5 +96,9 @@ public class MemberService implements UserDetailsService {
             .orElse(null);
   }
 
-  // ✅ addCartId(), deleteCartId() 완전히 제거됨!
+  // id로 회원 찾기
+  public Member findById(Long id) {
+    return memberRepository.findById(id)
+            .orElseThrow(() -> new IllegalStateException("회원을 찾을 수 없습니다. ID: " + id));
+  }
 }
