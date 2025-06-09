@@ -93,8 +93,22 @@
 
                     <!-- 네비게이션 메뉴 (CART, MY ORDERS, LOGIN, JOIN) -->
                     <ul class="navbar-nav d-flex flex-row">
-                        <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/CampingMarket/cart">CART</a></li>
-                        <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/CampingMarket/order/myOrders">MY ORDERS</a></li>
+                        <!-- ✅ 관리자 드롭다운 메뉴 -->
+                        <li sec:authorize="hasRole('ADMIN')" class="nav-item dropdown position-relative me-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                관리자 메뉴
+                            </a>
+                            <ul class="dropdown-menu position-absolute start-0" aria-labelledby="adminDropdown" style="z-index: 1050;">
+                                <li><a class="dropdown-item" href="/CampingMarket/admin/members">고객정보 관리</a></li>
+                                <li><a class="dropdown-item" href="#">주문내역 관리</a></li>
+                                <li><a class="dropdown-item" href="#">상품 등록</a></li>
+                                <li><a class="dropdown-item" href="#">상품 수정/삭제</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- USER용 메뉴 -->
+                        <li sec:authorize="hasRole('USER')" class="nav-item"><a class="nav-link" href="/CampingMarket/cart">CART</a></li>
+                        <li sec:authorize="hasRole('USER')" class="nav-item"><a class="nav-link" href="/CampingMarket/order/myOrders">MY ORDERS</a></li>
                         <!-- 로그인 버튼 -->
                         <li class="nav-item position-relative">
                             <div class="login-box">

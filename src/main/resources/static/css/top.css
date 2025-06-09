@@ -117,3 +117,9 @@ header {min-height: 120px;}
 .dropdown-item:hover {background-color: #f0f0f0;}
 /* 드롭다운 화살표 제거 */
 .dropdown-toggle::after {display: none;}
+
+/* 관리자메뉴 드롭다운 표시 */
+.nav-item.dropdown:hover > .dropdown-menu,
+.nav-item.dropdown > .dropdown-menu:hover {
+    display: block;
+}

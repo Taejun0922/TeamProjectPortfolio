@@ -55,4 +55,5 @@ public class AdminController {
         model.addAttribute("orderList", orderList);
         return "admin/memberOrderList";
     }
+
 }

@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.sbproject03.domain.Cart;
 import org.sbproject03.repository.CartRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -100,5 +102,15 @@ public class MemberService implements UserDetailsService {
   public Member findById(Long id) {
     return memberRepository.findById(id)
             .orElseThrow(() -> new IllegalStateException("회원을 찾을 수 없습니다. ID: " + id));
+  }
+
+  // 회원 ID로 검색 (검색 기능)
+  public List<Member> searchByMemberId(String keyword) {
+    return memberRepository.findByMemberIdContaining(keyword);
+  }
+
+  // 전체 회원 조회
+  public List<Member> findAll() {
+    return memberRepository.findAll();
   }
 }

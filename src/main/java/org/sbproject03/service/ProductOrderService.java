@@ -118,4 +118,11 @@ public class ProductOrderService {
   public List<ProductOrder> getOrdersByMember(Member member) {
     return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
   }
+
+  public List<ProductOrder> findByMemberId(Long memberId) {
+    Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. ID: " + memberId));
+
+    return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
+  }
 }
