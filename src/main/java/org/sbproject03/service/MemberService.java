@@ -2,6 +2,7 @@ package org.sbproject03.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sbproject03.domain.Member;
+import org.sbproject03.domain.Role;
 import org.sbproject03.repository.MemberRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -100,17 +101,16 @@ public class MemberService implements UserDetailsService {
 
   // id로 회원 찾기
   public Member findById(Long id) {
-    return memberRepository.findById(id)
-            .orElseThrow(() -> new IllegalStateException("회원을 찾을 수 없습니다. ID: " + id));
+    return memberRepository.findById(id).orElse(null);
   }
 
   // 회원 ID로 검색 (검색 기능)
   public List<Member> searchByMemberId(String keyword) {
-    return memberRepository.findByMemberIdContaining(keyword);
+    return memberRepository.findByMemberIdContainingAndRole(keyword, Role.USER);
   }
 
   // 전체 회원 조회
   public List<Member> findAll() {
-    return memberRepository.findAll();
+    return memberRepository.findByRole(Role.USER);
   }
 }

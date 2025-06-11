@@ -44,7 +44,11 @@ public class AdminController {
     @GetMapping("/member/view/{id}")
     public String viewMemberDetail(@PathVariable Long id, Model model) {
         Member member = memberService.findById(id);
+        List<ProductOrder> orderList = orderService.findByMemberId(id); // 주문 내역 조회
+
         model.addAttribute("member", member);
+        model.addAttribute("hasOrders", !orderList.isEmpty()); // 주문 여부만 전달
+
         return "admin/memberDetail";
     }
 

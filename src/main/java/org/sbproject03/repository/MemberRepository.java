@@ -1,6 +1,7 @@
 package org.sbproject03.repository;
 
 import org.sbproject03.domain.Member;
+import org.sbproject03.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("DELETE FROM Member m WHERE m.memberId = :memberId")
     void deleteByMemberId(@Param("memberId") String memberId);
 
-    List<Member> findByMemberIdContaining(String keyword);
+    // Role이 USER인 멤버 전체 조회
+    List<Member> findByRole(Role role);
 
+    // Role이 USER이고, 아이디에 키워드가 포함된 멤버 검색
+    List<Member> findByMemberIdContainingAndRole(String memberId, Role role);
 }

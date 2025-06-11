@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 상세 정보</title>
+
+    <!-- CSS -->
+    <link th:href="@{/css/top.css}" rel="stylesheet">
+    <link th:href="@{/css/bottom.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+
+    <!-- JS -->
+    <script th:src="@{/js/main.js}"></script>
+
+</head>
+<body>
+<div id="wrap">
+    <!-- 헤더 -->
+    <th:block th:replace="~{/module/top.html}"></th:block>
+
+    <!-- 본문 -->
+    <div class="container mt-5">
+        <h2 class="fw-bold mb-4 text-center">회원 상세 정보</h2>
+
+        <div class="card mx-auto mt-4 mb-5" style="width: 100%; max-width: 1000px;">
+            <div class="card-body">
+                <table class="table table-bordered align-middle">
+                    <tbody>
+                    <tr>
+                        <th class="w-25">회원 아이디</th>
+                        <td th:text="${member.memberId}"></td>
+                    </tr>
+                    <tr>
+                        <th>이름</th>
+                        <td th:text="${member.memberName}"></td>
+                    </tr>
+                    <tr>
+                        <th>전화번호</th>
+                        <td th:text="${member.memberPhone}"></td>
+                    </tr>
+                    <tr>
+                        <th>이메일</th>
+                        <td th:text="${member.memberEmail}"></td>
+                    </tr>
+                    <tr>
+                        <th>주소</th>
+                        <td th:text="${member.memberAddress}"></td>
+                    </tr>
+                    <tr>
+                        <th>주문 내역</th>
+                        <td>
+                            <a th:if="${hasOrders}" th:href="@{'/admin/member/' + ${member.id} + '/orders'}"
+                               class="btn btn-outline-primary btn-sm">주문 내역 보기</a>
+                            <span th:unless="${hasOrders}" class="text-muted">주문 내역이 없습니다.</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-4">
+                    <a th:href="@{/admin/members}" class="btn btn-secondary">목록으로</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>
