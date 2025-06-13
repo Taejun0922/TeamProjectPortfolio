@@ -119,10 +119,26 @@ public class ProductOrderService {
     return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
   }
 
-  public List<ProductOrder> findByMemberId(Long memberId) {
-    Member member = memberRepository.findById(memberId)
+  // 전체 주문 조회
+  public List<ProductOrder> findAll() {
+    return productOrderRepository.findAll();
+  }
+
+  // memberId로 주문 내역 찾기
+  public List<ProductOrder> findByMemberId(String memberId) {
+    Member member = memberRepository.findByMemberId(memberId)
             .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. ID: " + memberId));
 
     return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
   }
+
+  // id로 주문 내역 찾기
+  public List<ProductOrder> findById(Long id) {
+    Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. ID: " + id));
+
+    return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
+  }
+
+
 }

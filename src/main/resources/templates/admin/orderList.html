@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 내역 관리</title>
+    <link th:href="@{/css/top.css}" rel="stylesheet">
+    <link th:href="@{/css/bottom.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div id="wrap">
+    <th:block th:replace="~{/module/top.html}"></th:block>
+
+    <div class="container mt-5">
+        <h2 class="fw-bold mb-4 text-center">주문 내역 관리</h2>
+
+        <!-- 검색 폼 -->
+        <form th:action="@{/admin/orders}" method="get" class="mb-4 d-flex justify-content-end">
+            <input type="text" name="memberId" class="form-control me-2" style="max-width: 200px;"
+                   placeholder="회원 아이디 검색" th:value="${memberId}">
+            <button type="submit" class="btn btn-outline-primary">검색</button>
+        </form>
+
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+            <tr>
+                <th>주문 ID</th>
+                <th>회원 아이디</th>
+                <th>주문 날짜</th>
+                <th>주문 상태</th>
+                <th>총 금액</th>
+                <th>대표 상품</th>
+                <th>상세보기</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orderList}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.member.memberId}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${order.status}"></td>
+                <td>
+                    <span th:text="${#numbers.formatInteger(
+                        order.items.stream().mapToInt(item -> item.price * item.quantity).sum(), 0, 'COMMA')} + '원'"></span>
+                </td>
+                <td>
+                    <span th:if="${order.items.size() > 0}">
+                        <span th:text="${order.items.get(0).product.productName}"></span>
+                        <span th:if="${order.items.size() > 1}"> 외 <span th:text="${order.items.size() - 1}"></span>건</span>
+                    </span>
+                    <span th:unless="${order.items.size() > 0}" class="text-muted">상품 없음</span>
+                </td>
+                <td>
+                    <a th:href="@{'/admin/order/' + ${order.id}}" class="btn btn-sm btn-outline-secondary">상세보기</a>
+                </td>
+            </tr>
+            <tr th:if="${orderList.size() == 0}">
+                <td colspan="7" class="text-muted">주문 내역이 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="text-end mt-3 mb-3">
+            <a th:href="@{/admin/members}" class="btn btn-secondary">회원 목록으로</a>
+        </div>
+    </div>
+
+    <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>
