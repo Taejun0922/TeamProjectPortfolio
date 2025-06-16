@@ -47,10 +47,13 @@
                     <td th:text="${member.memberName}"></td>
                     <td th:text="${member.memberPhone}"></td>
                     <td>
-                        <a th:href="@{'/admin/member/view/' + ${member.id}}" class="btn btn-outline-primary btn-sm">상세정보</a>
+                        <a th:href="@{'/admin/member/view/' + ${member.id}}" class="btn btn-outline-success btn-sm">상세정보</a>
                     </td>
                     <td>
-                        <a th:href="@{'/admin/member/' + ${member.id} + '/orders'}" class="btn btn-outline-secondary btn-sm">주문 내역</a>
+                        <span th:if="${orderExistMap[member.id]}">
+                            <a th:href="@{'/admin/member/' + ${member.id} + '/orders'}" class="btn btn-outline-primary btn-sm">주문 내역</a>
+                        </span>
+                        <span th:unless="${orderExistMap[member.id]}" class="text-muted">주문 내역이 없습니다.</span>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(memberList)}">

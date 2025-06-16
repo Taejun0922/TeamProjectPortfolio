@@ -2,6 +2,7 @@ package org.sbproject03.controller;
 
 import org.sbproject03.domain.Member;
 import org.sbproject03.domain.ProductOrder;
+import org.sbproject03.domain.ProductOrderItem;
 import org.sbproject03.service.MemberService;
 import org.sbproject03.service.ProductOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -25,6 +28,7 @@ public class AdminController {
     }
 
     // ✅ 회원 리스트 (검색 포함)
+    // ✅ 회원 리스트 (검색 포함)
     @GetMapping("/members")
     public String getMemberList(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
         List<Member> memberList;
@@ -35,8 +39,18 @@ public class AdminController {
             memberList = memberService.findAll();
         }
 
+        // 회원별 주문 내역 존재 여부 체크 맵 생성
+        Map<Long, Boolean> orderExistMap = new HashMap<>();
+        for (Member member : memberList) {
+            // member.id로 주문 내역이 있는지 확인
+            List<ProductOrder> orders = orderService.findById(member.getId());
+            orderExistMap.put(member.getId(), !orders.isEmpty());
+        }
+
         model.addAttribute("memberList", memberList);
         model.addAttribute("keyword", keyword); // 검색어 유지
+        model.addAttribute("orderExistMap", orderExistMap); // 주문 내역 존재 여부 전달
+
         return "admin/memberList";
     }
 
@@ -63,17 +77,45 @@ public class AdminController {
             orderList = orderService.findAll();
         }
 
+        // 🔹 주문별 총 금액 계산
+        Map<Long, Integer> orderTotalMap = new HashMap<>();
+        for (ProductOrder order : orderList) {
+            int total = order.getItems().stream()
+                    .mapToInt(ProductOrderItem::getPrice)
+                    .sum();
+            orderTotalMap.put(order.getId(), total);
+        }
+
         model.addAttribute("orderList", orderList);
-        model.addAttribute("memberId", memberId); // 검색어 유지용
+        model.addAttribute("orderTotalMap", orderTotalMap);
+        model.addAttribute("memberId", memberId);
         return "admin/orderList";
     }
 
+
     // ✅ 회원 주문 내역 보기
+    // ✅ 특정 회원의 주문 내역을 orderList.html로 출력
     @GetMapping("/member/{id}/orders")
     public String viewMemberOrders(@PathVariable Long id, Model model) {
-        List<ProductOrder> orderList = orderService.findById(id);
-        model.addAttribute("orderList", orderList);
-        return "admin/memberOrderList";
-    }
+        Member member = memberService.findById(id); // 회원 정보 가져오기
+        if (member == null) {
+            return "redirect:/admin/members"; // 없는 회원이면 목록으로
+        }
 
+        List<ProductOrder> orderList = orderService.findById(id); // 회원의 주문 목록 조회
+
+        // 주문별 총 금액 계산
+        Map<Long, Integer> orderTotalMap = new HashMap<>();
+        for (ProductOrder order : orderList) {
+            int total = order.getItems().stream()
+                    .mapToInt(ProductOrderItem::getPrice)
+                    .sum();
+            orderTotalMap.put(order.getId(), total);
+        }
+
+        model.addAttribute("orderList", orderList);
+        model.addAttribute("orderTotalMap", orderTotalMap);
+        model.addAttribute("memberId", member.getMemberId()); // 검색창에 자동 입력되도록
+        return "admin/orderList";
+    }
 }

@@ -40,8 +40,7 @@
                 <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${order.status}"></td>
                 <td>
-                    <span th:text="${#numbers.formatInteger(
-                        order.items.stream().mapToInt(item -> item.price * item.quantity).sum(), 0, 'COMMA')} + '원'"></span>
+                    <span th:text="${#numbers.formatInteger(orderTotalMap[order.id], 0, 'COMMA') + '원'}"></span>
                 </td>
                 <td>
                     <span th:if="${order.items.size() > 0}">
@@ -61,6 +60,7 @@
         </table>
 
         <div class="text-end mt-3 mb-3">
+            <a th:href="@{/admin/orders}" class="btn btn-outline-primary me-2">전체 주문 보기</a>
             <a th:href="@{/admin/members}" class="btn btn-secondary">회원 목록으로</a>
         </div>
     </div>
