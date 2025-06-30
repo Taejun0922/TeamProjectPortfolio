@@ -140,5 +140,9 @@ public class ProductOrderService {
     return productOrderRepository.findByMemberOrderByOrderDateDesc(member);
   }
 
-
+  // 주문 ID로 단일 주문 조회
+  public ProductOrder findByOrderId(Long orderId) {
+    return productOrderRepository.findById(orderId)
+            .orElseThrow(() -> new IllegalArgumentException("주문 정보를 찾을 수 없습니다. ID: " + orderId));
+  }
 }

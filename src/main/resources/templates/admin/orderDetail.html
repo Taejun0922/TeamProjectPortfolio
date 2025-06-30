@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>주문 상세 정보</title>
+  <link th:href="@{/css/top.css}" rel="stylesheet">
+  <link th:href="@{/css/bottom.css}" rel="stylesheet">
+  <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div id="wrap">
+  <th:block th:replace="~{/module/top.html}"></th:block>
+
+  <div class="container mt-5">
+    <h2 class="fw-bold mb-4 text-center">주문 상세 정보</h2>
+
+    <div class="card mx-auto mb-5 w-100">
+      <div class="card-body">
+        <table class="table table-bordered">
+          <tbody>
+          <tr>
+            <th class="w-25">주문 ID</th>
+            <td th:text="${order.id}"></td>
+          </tr>
+          <tr>
+            <th>주문 일시</th>
+            <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+          </tr>
+          <tr>
+            <th>주문 상태</th>
+            <td th:text="${order.status}"></td>
+          </tr>
+          <tr>
+            <th>회원 아이디</th>
+            <td th:text="${order.member.memberId}"></td>
+          </tr>
+          <tr>
+            <th>총 금액</th>
+            <td th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA') + '원'}"></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <h5 class="mt-4">주문 상품 목록</h5>
+        <table class="table table-striped table-bordered text-center">
+          <thead>
+          <tr>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>가격</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="item : ${order.items}">
+            <td th:text="${item.product.productName}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + '원'}"></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="text-end mt-4">
+          <a th:href="@{/admin/orders}" class="btn btn-secondary">주문 목록으로</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>

@@ -92,7 +92,6 @@ public class AdminController {
         return "admin/orderList";
     }
 
-
     // ✅ 회원 주문 내역 보기
     // ✅ 특정 회원의 주문 내역을 orderList.html로 출력
     @GetMapping("/member/{id}/orders")
@@ -118,4 +117,22 @@ public class AdminController {
         model.addAttribute("memberId", member.getMemberId()); // 검색창에 자동 입력되도록
         return "admin/orderList";
     }
+
+    // ✅ 주문 상세 보기
+    @GetMapping("/order/{orderId}")
+    public String viewOrderDetail(@PathVariable Long orderId, Model model) {
+        ProductOrder order = orderService.findByOrderId(orderId); // 해당 주문 조회
+        if (order == null) {
+            return "redirect:/admin/orders"; // 주문이 없으면 목록으로
+        }
+
+        int totalPrice = order.getItems().stream()
+                .mapToInt(ProductOrderItem::getPrice)
+                .sum();
+
+        model.addAttribute("order", order);
+        model.addAttribute("totalPrice", totalPrice);
+        return "admin/orderDetail"; // orderDetail.html로 이동
+    }
+
 }

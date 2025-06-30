@@ -50,7 +50,7 @@
                     <span th:unless="${order.items.size() > 0}" class="text-muted">상품 없음</span>
                 </td>
                 <td>
-                    <a th:href="@{'/admin/order/' + ${order.id}}" class="btn btn-sm btn-outline-secondary">상세보기</a>
+                    <a th:href="@{'/admin/order/' + ${order.id}}" class="btn btn-sm btn-outline-success">상세보기</a>
                 </td>
             </tr>
             <tr th:if="${orderList.size() == 0}">
