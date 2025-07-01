@@ -53,7 +53,7 @@
                     <a th:href="@{'/admin/order/' + ${order.id}}" class="btn btn-sm btn-outline-success">상세보기</a>
                 </td>
             </tr>
-            <tr th:if="${orderList.size() == 0}">
+            <tr th:if="${orderList.empty}">
                 <td colspan="7" class="text-muted">주문 내역이 없습니다.</td>
             </tr>
             </tbody>
@@ -64,6 +64,28 @@
             <a th:href="@{/admin/members}" class="btn btn-secondary">회원 목록으로</a>
         </div>
     </div>
+
+    <!-- 페이징 UI -->
+    <nav th:if="${orderList.totalPages > 1}">
+        <ul class="pagination justify-content-center mt-4">
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${orderList.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/orders(page=${orderList.number - 1}, memberId=${memberId})}">이전</a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}"
+                th:classappend="${i == orderList.number} ? 'active'">
+                <a class="page-link" th:href="@{/admin/orders(page=${i}, memberId=${memberId})}" th:text="${i + 1}"></a>
+            </li>
+
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${orderList.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/orders(page=${orderList.number + 1}, memberId=${memberId})}">다음</a>
+            </li>
+        </ul>
+    </nav>
+
 
     <th:block th:replace="~{/module/bottom.html}"></th:block>
 </div>

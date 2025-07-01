@@ -7,6 +7,8 @@ import org.sbproject03.repository.MemberRepository;
 import org.sbproject03.repository.ProductOrderRepository;
 import org.sbproject03.repository.ProductOrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -145,4 +147,14 @@ public class ProductOrderService {
     return productOrderRepository.findById(orderId)
             .orElseThrow(() -> new IllegalArgumentException("주문 정보를 찾을 수 없습니다. ID: " + orderId));
   }
+
+  // 페이징처리
+  public Page<ProductOrder> findAll(Pageable pageable) {
+    return productOrderRepository.findAll(pageable);
+  }
+
+  public Page<ProductOrder> findByMemberId(String memberId, Pageable pageable) {
+    return productOrderRepository.findByMember_MemberIdContaining(memberId, pageable);
+  }
+
 }

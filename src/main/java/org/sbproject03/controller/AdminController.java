@@ -6,6 +6,10 @@ import org.sbproject03.domain.ProductOrderItem;
 import org.sbproject03.service.MemberService;
 import org.sbproject03.service.ProductOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,29 +32,30 @@ public class AdminController {
     }
 
     // ✅ 회원 리스트 (검색 포함)
-    // ✅ 회원 리스트 (검색 포함)
     @GetMapping("/members")
-    public String getMemberList(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
-        List<Member> memberList;
+    public String getMemberList(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, 20, Sort.by("id").descending());  // 한 페이지 20개
+        Page<Member> memberPage;
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            memberList = memberService.searchByMemberId(keyword);
+            memberPage = memberService.searchByMemberId(keyword, pageable);
         } else {
-            memberList = memberService.findAll();
+            memberPage = memberService.findAll(pageable);
         }
 
-        // 회원별 주문 내역 존재 여부 체크 맵 생성
         Map<Long, Boolean> orderExistMap = new HashMap<>();
-        for (Member member : memberList) {
-            // member.id로 주문 내역이 있는지 확인
+        for (Member member : memberPage.getContent()) {
             List<ProductOrder> orders = orderService.findById(member.getId());
             orderExistMap.put(member.getId(), !orders.isEmpty());
         }
 
-        model.addAttribute("memberList", memberList);
-        model.addAttribute("keyword", keyword); // 검색어 유지
-        model.addAttribute("orderExistMap", orderExistMap); // 주문 내역 존재 여부 전달
-
+        model.addAttribute("memberList", memberPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("orderExistMap", orderExistMap);
         return "admin/memberList";
     }
 
@@ -68,29 +73,34 @@ public class AdminController {
 
     // ✅ 주문 전체 조회 또는 회원 ID로 필터링
     @GetMapping("/orders")
-    public String viewAllOrders(@RequestParam(value = "memberId", required = false) String memberId, Model model) {
-        List<ProductOrder> orderList;
+    public String viewAllOrders(
+            @RequestParam(value = "memberId", required = false) String memberId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, 20, Sort.by("orderDate").descending());
+        Page<ProductOrder> orderPage;
 
         if (memberId != null && !memberId.trim().isEmpty()) {
-            orderList = orderService.findByMemberId(memberId);
+            orderPage = orderService.findByMemberId(memberId, pageable);
         } else {
-            orderList = orderService.findAll();
+            orderPage = orderService.findAll(pageable);
         }
 
-        // 🔹 주문별 총 금액 계산
         Map<Long, Integer> orderTotalMap = new HashMap<>();
-        for (ProductOrder order : orderList) {
+        for (ProductOrder order : orderPage.getContent()) {
             int total = order.getItems().stream()
                     .mapToInt(ProductOrderItem::getPrice)
                     .sum();
             orderTotalMap.put(order.getId(), total);
         }
 
-        model.addAttribute("orderList", orderList);
+        model.addAttribute("orderList", orderPage); // Page 객체 전달
         model.addAttribute("orderTotalMap", orderTotalMap);
         model.addAttribute("memberId", memberId);
         return "admin/orderList";
     }
+
 
     // ✅ 회원 주문 내역 보기
     // ✅ 특정 회원의 주문 내역을 orderList.html로 출력

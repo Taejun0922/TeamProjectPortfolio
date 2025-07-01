@@ -3,6 +3,8 @@ package org.sbproject03.repository;
 import org.sbproject03.domain.OrderStatus;
 import org.sbproject03.domain.ProductOrder;
 import org.sbproject03.domain.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -25,4 +27,9 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
 
     // 회원별 주문 목록 조회 (최신 순)
     List<ProductOrder> findByMemberOrderByOrderDateDesc(Member member);
+
+    // 페이징처리
+    Page<ProductOrder> findAll(Pageable pageable);
+    Page<ProductOrder> findByMember_MemberIdContaining(String memberId, Pageable pageable);
+
 }

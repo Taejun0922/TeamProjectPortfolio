@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.sbproject03.domain.Member;
 import org.sbproject03.domain.Role;
 import org.sbproject03.repository.MemberRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -112,5 +114,15 @@ public class MemberService implements UserDetailsService {
   // 전체 회원 조회
   public List<Member> findAll() {
     return memberRepository.findByRole(Role.USER);
+  }
+
+  // 페이징처리
+  public Page<Member> findAll(Pageable pageable) {
+    return memberRepository.findByRole(Role.USER, pageable);
+  }
+  
+  // 페이징처리해서 검색
+  public Page<Member> searchByMemberId(String keyword, Pageable pageable) {
+    return memberRepository.findByMemberIdContainingAndRole(keyword, Role.USER, pageable);
   }
 }

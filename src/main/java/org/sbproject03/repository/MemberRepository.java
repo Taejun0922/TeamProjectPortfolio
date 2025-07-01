@@ -2,6 +2,8 @@ package org.sbproject03.repository;
 
 import org.sbproject03.domain.Member;
 import org.sbproject03.domain.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +29,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // Role이 USER이고, 아이디에 키워드가 포함된 멤버 검색
     List<Member> findByMemberIdContainingAndRole(String memberId, Role role);
+
+    // 페이징처리
+    Page<Member> findByMemberIdContaining(String keyword, Pageable pageable);
+    Page<Member> findByRole(Role role, Pageable pageable);
+    Page<Member> findByMemberIdContainingAndRole(String memberId, Role role, Pageable pageable);
 }

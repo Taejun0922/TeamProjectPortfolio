@@ -42,7 +42,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="member : ${memberList}">
+                <tr th:each="member : ${memberList.content}">
                     <td th:text="${member.memberId}"></td>
                     <td th:text="${member.memberName}"></td>
                     <td th:text="${member.memberPhone}"></td>
@@ -56,13 +56,36 @@
                         <span th:unless="${orderExistMap[member.id]}" class="text-muted">주문 내역이 없습니다.</span>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(memberList)}">
+                <tr th:if="${memberList.empty}">
                     <td colspan="5">검색 결과가 없습니다.</td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- 페이징 -->
+    <nav th:if="${memberList.totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- 이전 버튼 -->
+            <li class="page-item" th:classappend="${memberList.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/members(page=${memberList.number - 1}, keyword=${keyword})}">이전</a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, memberList.totalPages - 1)}"
+                th:classappend="${i == memberList.number} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/admin/members(page=${i}, keyword=${keyword})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+
+            <!-- 다음 버튼 -->
+            <li class="page-item" th:classappend="${memberList.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/members(page=${memberList.number + 1}, keyword=${keyword})}">다음</a>
+            </li>
+        </ul>
+    </nav>
 
     <!-- 푸터 -->
     <th:block th:replace="~{/module/bottom.html}"></th:block>
