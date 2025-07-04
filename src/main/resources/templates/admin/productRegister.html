@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 등록</title>
+
+  <!-- JS -->
+  <script th:src="@{/js/product.js}"></script>
+
+  <!-- CSS -->
+  <link th:href="@{/css/top.css}" rel="stylesheet">
+  <link th:href="@{/css/bottom.css}" rel="stylesheet">
+  <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div id="wrap">
+  <!-- 헤더 -->
+  <th:block th:replace="~{/module/top.html}"></th:block>
+
+  <!-- 본문 -->
+  <div class="container mt-5">
+    <h2 class="fw-bold mb-4 text-center">상품 등록</h2>
+
+    <div class="card mx-auto mb-5" style="width: 100%;">
+      <div class="card-body">
+        <form th:action="@{/admin/products/register}" method="post" th:object="${productRegister}">
+          <table class="table table-bordered align-middle">
+            <tbody>
+            <tr>
+              <th class="w-25">상품명</th>
+              <td>
+                <input type="text" th:field="*{productName}" class="form-control" placeholder="상품명을 입력하세요" required>
+              </td>
+            </tr>
+            <tr>
+              <th>가격</th>
+              <td>
+                <input type="number" th:field="*{productPrice}" class="form-control" min="0" placeholder="숫자만 입력" required>
+              </td>
+            </tr>
+            <tr>
+              <th>재고</th>
+              <td>
+                <input type="number" th:field="*{productStock}" class="form-control" min="0" placeholder="숫자만 입력" required>
+              </td>
+            </tr>
+            <tr>
+              <th>카테고리</th>
+              <td>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" th:field="*{productCategory}" value="Tent" required>
+                  <label class="form-check-label">Tent</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" th:field="*{productCategory}" value="Sleeping_Bag">
+                  <label class="form-check-label">Sleeping Bag</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" th:field="*{productCategory}" value="Gadget">
+                  <label class="form-check-label">Gadget</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" th:field="*{productCategory}" value="Cooker">
+                  <label class="form-check-label">Cooker</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>상세 설명</th>
+              <td>
+                <textarea th:field="*{productDescription}" class="form-control" rows="4" placeholder="상품 설명을 입력하세요" required></textarea>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <!-- 히든 아이디 -->
+          <div>
+            <input type="hidden" th:field="*{productId}" id="productId">
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary">등록</button>
+            <a th:href="@{/admin/products}" class="btn btn-secondary">목록으로</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>

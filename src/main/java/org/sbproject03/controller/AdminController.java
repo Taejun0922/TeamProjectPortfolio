@@ -3,13 +3,16 @@ package org.sbproject03.controller;
 import org.sbproject03.domain.Member;
 import org.sbproject03.domain.ProductOrder;
 import org.sbproject03.domain.ProductOrderItem;
+import org.sbproject03.dto.ProductRegister;
 import org.sbproject03.service.MemberService;
 import org.sbproject03.service.ProductOrderService;
+import org.sbproject03.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +33,9 @@ public class AdminController {
         this.memberService = memberService;
         this.orderService = orderService;
     }
+
+    @Autowired
+    private ProductService productService;
 
     // ✅ 회원 리스트 (검색 포함)
     @GetMapping("/members")
@@ -143,6 +149,29 @@ public class AdminController {
         model.addAttribute("order", order);
         model.addAttribute("totalPrice", totalPrice);
         return "admin/orderDetail"; // orderDetail.html로 이동
+    }
+
+    // ✅ 상품 등록 페이지로 이동
+    @GetMapping("/product/register")
+    public String showProductRegisterForm(Model model) {
+        ProductRegister productRegister = new ProductRegister();
+        model.addAttribute("productRegister", productRegister);  // 🔹 반드시 등록되어야 함
+        return "admin/productRegister";
+    }
+
+    // ✅ 카테고리별 가장 큰 번호 + 1 반환
+    @GetMapping("/products/max-id")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getMaxProductId(@RequestParam String category) {
+        // 예: "Tent" 카테고리 → "tent_40" → 숫자 추출 후 +1
+        String prefix = category.trim().toLowerCase().replaceAll("\\s+", "_"); // tent, table 등
+        int nextNumber = productService.findNextProductIdNumber(prefix);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("prefix", prefix);
+        response.put("nextNumber", nextNumber); // JS가 productId 조합할 수 있도록
+
+        return ResponseEntity.ok(response);
     }
 
 }

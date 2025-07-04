@@ -165,4 +165,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 전역 함수로 등록 (HTML inline onclick에서 호출 가능하게)
     window.submitDirectOrder = submitDirectOrder;
+
+    // 🧩 카테고리별 가장 큰 번호 조회 + ID 생성
+    async function generateProductId() {
+        const categoryInput = document.querySelector("input[name='productCategory']:checked");
+        if (!categoryInput) return;
+
+        const category = categoryInput.value;  // e.g., "Tent"
+        const prefix = category.replace(/\s+/g, "_");
+
+        try {
+            const resp = await fetch(`/admin/products/max-id?category=${encodeURIComponent(category)}`);
+            if (!resp.ok) throw new Error("Max ID 조회 실패");
+            const json = await resp.json();
+            const nextNumber = json.nextNumber;  // 서버가 반환한 다음 번호
+
+            const generatedId = `${prefix}_${nextNumber}`;
+            const productIdField = document.querySelector("#productId");
+
+            if (productIdField) {
+                productIdField.value = generatedId;
+                console.log("설정된 productId:", generatedId);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("상품 ID 자동 생성에 실패했습니다.");
+        }
+    }
+
+    // 카테고리 선택 시 자동 재생성
+    document.querySelectorAll("input[name='productCategory']").forEach(radio => {
+        radio.addEventListener("change", generateProductId);
+    });
+
+    // 페이지 로드 시 첫 선택 또는 기본값 있을 경우 자동 생성
+    generateProductId();
+
 });

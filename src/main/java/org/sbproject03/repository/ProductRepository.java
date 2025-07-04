@@ -4,6 +4,8 @@ import org.sbproject03.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Page<Product> findByProductCategory(String productCategory, Pageable pageable);
     // 검색 기능
     Page<Product> findByProductNameContainingIgnoreCase(String productName, Pageable pageable);
+
+    // 카테고리별 최대 번호
+    @Query("SELECT MAX(p.productId) FROM Product p WHERE p.productId LIKE CONCAT(:prefix, '_%')")
+    String findMaxProductIdByPrefix(@Param("prefix") String prefix);
 }
