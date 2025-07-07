@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +173,40 @@ public class AdminController {
         response.put("nextNumber", nextNumber); // JS가 productId 조합할 수 있도록
 
         return ResponseEntity.ok(response);
+    }
+
+    // 상품 등록 코드
+    @PostMapping("/products/register")
+    public String registerProduct(
+            @ModelAttribute("productRegister") ProductRegister dto,
+            Model model
+    ) {
+        try {
+            String productId = dto.getProductId();
+            if (productId == null || productId.isEmpty()) {
+                // 예외 처리
+                model.addAttribute("error", "상품 ID가 없습니다.");
+                return "admin/productRegister";
+            }
+
+            // 이미지 저장 경로
+            String uploadDir = "D:/upload/images/";
+
+            // 대표 이미지 저장
+            if (dto.getMainImage() != null && !dto.getMainImage().isEmpty()) {
+                String fileName = "IMG_" + productId + ".jpg";
+                dto.getMainImage().transferTo(new File(uploadDir + fileName));
+            }
+
+            // Product 객체로 변환 후 저장
+            productService.registerNewProduct(dto);
+
+            return "redirect:/admin/products"; // 상품 목록 페이지로 이동
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "상품 등록 중 오류가 발생했습니다.");
+            return "admin/productRegister";
+        }
     }
 
 }

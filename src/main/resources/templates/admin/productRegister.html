@@ -23,7 +23,11 @@
 
     <div class="card mx-auto mb-5" style="width: 100%;">
       <div class="card-body">
-        <form th:action="@{/admin/products/register}" method="post" th:object="${productRegister}">
+        <form th:action="@{/admin/products/register}"
+              method="post"
+              th:object="${productRegister}"
+              enctype="multipart/form-data">
+
           <table class="table table-bordered align-middle">
             <tbody>
             <tr>
@@ -69,6 +73,22 @@
               <th>상세 설명</th>
               <td>
                 <textarea th:field="*{productDescription}" class="form-control" rows="4" placeholder="상품 설명을 입력하세요" required></textarea>
+              </td>
+            </tr>
+
+            <!-- 대표 이미지 업로드 -->
+            <tr>
+              <th>대표 이미지</th>
+              <td>
+                <input type="file" name="mainImage" accept="image/*" class="form-control" required>
+              </td>
+            </tr>
+
+            <!-- 상세 이미지 업로드 -->
+            <tr>
+              <th>상세 이미지</th>
+              <td>
+                <input type="file" name="detailImage" accept="image/*" class="form-control">
               </td>
             </tr>
             </tbody>

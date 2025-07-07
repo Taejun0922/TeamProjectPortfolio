@@ -1,12 +1,17 @@
 package org.sbproject03.service;
 
 import org.sbproject03.domain.Product;
+import org.sbproject03.dto.ProductRegister;
 import org.sbproject03.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -14,6 +19,9 @@ public class ProductService {
 
   @Autowired
   private ProductRepository productRepository;
+
+  @Value("${file.uploadDir}")
+  private String baseDir;  // application.yml에서 지정한 경로 자동 주입
 
 
   // 특정 카테고리 상품 가져오기
@@ -67,6 +75,36 @@ public class ProductService {
     }
 
     return 1; // 없을 경우 tent_1부터 시작
+  }
+
+  // 상품등록코드
+  public void registerNewProduct(ProductRegister productRegister) throws IOException {
+    // 1. DTO -> Entity 변환
+    Product product = new Product();
+    product.setProductId(productRegister.getProductId());
+    product.setProductName(productRegister.getProductName());
+    product.setProductPrice(productRegister.getProductPrice());
+    product.setProductStock(productRegister.getProductStock());
+    product.setProductCategory(productRegister.getProductCategory());
+    product.setProductDescription(productRegister.getProductDescription());
+
+    // 2. DB에 상품 저장
+    productRepository.save(product);
+
+    // 3. 이미지 저장
+    MultipartFile mainImage = productRegister.getMainImage();
+    MultipartFile detailImage = productRegister.getDetailImage();
+
+    // baseDir 값은 application.yml의 file.uploadDir 설정값
+    if (mainImage != null && !mainImage.isEmpty()) {
+      String mainImageName = "IMG_" + product.getProductId() + "_main.jpg";
+      mainImage.transferTo(new File(baseDir + mainImageName));
+    }
+
+    if (detailImage != null && !detailImage.isEmpty()) {
+      String detailImageName = "IMG_" + product.getProductId() + "_detail.jpg";
+      detailImage.transferTo(new File(baseDir + detailImageName));
+    }
   }
 
 }
