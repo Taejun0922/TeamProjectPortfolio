@@ -17,5 +17,7 @@ public class ProductRegister {
     private MultipartFile mainImage;     // 대표 이미지
     private MultipartFile detailImage;   // 상세 이미지
 
-    public ProductRegister() {}
+    public ProductRegister() {
+        this.productCategory = "Tent"; // ✅ 기본 카테고리 설정
+    }
 }

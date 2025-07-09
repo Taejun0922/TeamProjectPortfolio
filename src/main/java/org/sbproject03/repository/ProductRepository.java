@@ -21,6 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Page<Product> findByProductNameContainingIgnoreCase(String productName, Pageable pageable);
 
     // 카테고리별 최대 번호
-    @Query("SELECT MAX(p.productId) FROM Product p WHERE p.productId LIKE CONCAT(:prefix, '_%')")
-    String findMaxProductIdByPrefix(@Param("prefix") String prefix);
+    @Query(value = "SELECT MAX(CAST(SUBSTRING_INDEX(product_id, '_', -1) AS UNSIGNED)) FROM product WHERE product_id LIKE CONCAT(:prefix, '_%')", nativeQuery = true)
+    Integer findMaxNumberByPrefix(@Param("prefix") String prefix);
 }

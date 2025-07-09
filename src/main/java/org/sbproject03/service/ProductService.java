@@ -66,16 +66,13 @@ public class ProductService {
 
   // 카테고리별 최대 번호
   public int findNextProductIdNumber(String prefix) {
-    // 가장 큰 productId를 찾는 DAO/쿼리: 예를 들면 "tent_40", "tent_39"
-    String lastId = productRepository.findMaxProductIdByPrefix(prefix); // 예: "tent_40"
-
-    if (lastId != null && lastId.matches(prefix + "_\\d+")) {
-      String numberPart = lastId.substring(prefix.length() + 1); // "40"
-      return Integer.parseInt(numberPart) + 1;
+    Integer maxNumber = productRepository.findMaxNumberByPrefix(prefix);
+    if (maxNumber == null) {
+      return 1; // 신규 카테고리일 경우
     }
-
-    return 1; // 없을 경우 tent_1부터 시작
+    return maxNumber + 1;
   }
+
 
   // 상품등록코드
   public void registerNewProduct(ProductRegister productRegister) throws IOException {
