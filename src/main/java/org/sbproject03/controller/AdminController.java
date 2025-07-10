@@ -18,6 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,10 +194,24 @@ public class AdminController {
             // 이미지 저장 경로
             String uploadDir = "D:/upload/images/";
 
-            // 대표 이미지 저장
+            // 대표이미지 저장
             if (dto.getMainImage() != null && !dto.getMainImage().isEmpty()) {
                 String fileName = "IMG_" + productId + ".jpg";
-                dto.getMainImage().transferTo(new File(uploadDir + fileName));
+                File mainFile = new File(uploadDir + fileName);
+                dto.getMainImage().transferTo(mainFile);
+
+                // 만약 detailImage와 같은 파일이라면 복사해서 저장
+                if (dto.getDetailImage() != null && !dto.getDetailImage().isEmpty()
+                        && dto.getMainImage().getOriginalFilename().equals(dto.getDetailImage().getOriginalFilename())) {
+
+                    String detailFileName = "IMG_Detail_" + productId + ".jpg";
+                    File detailFile = new File(uploadDir + detailFileName);
+                    Files.copy(mainFile.toPath(), detailFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } else if (dto.getDetailImage() != null && !dto.getDetailImage().isEmpty()) {
+                    // 파일이 다르면 그대로 저장
+                    String detailFileName = "IMG_Detail_" + productId + ".jpg";
+                    dto.getDetailImage().transferTo(new File(uploadDir + detailFileName));
+                }
             }
 
             // Product 객체로 변환 후 저장
@@ -205,7 +221,7 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "상품 등록 중 오류가 발생했습니다.");
-            return "admin/productRegister";
+            return "redirect:/admin/product/register?registerSuccess=true";
         }
     }
 

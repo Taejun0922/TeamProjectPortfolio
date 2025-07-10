@@ -239,4 +239,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // 페이지 로드 시 첫 선택 또는 기본값 있을 경우 자동 생성
     generateProductId();
 
+    // 상품추가 토스트 메시지 코드
+    function showRegisterSuccessToastIfNeeded() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("registerSuccess") === "true") {
+            const toastEl = document.getElementById("registerToast");
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                toast.show();
+            }
+        }
+    }
+
+    showRegisterSuccessToastIfNeeded();
 });

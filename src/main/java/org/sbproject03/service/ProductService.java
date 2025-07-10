@@ -82,7 +82,7 @@ public class ProductService {
     product.setProductName(productRegister.getProductName());
     product.setProductPrice(productRegister.getProductPrice());
     product.setProductStock(productRegister.getProductStock());
-    product.setProductCategory(productRegister.getProductCategory());
+    product.setProductCategory(productRegister.getProductCategory().toUpperCase());
     product.setProductDescription(productRegister.getProductDescription());
 
     // 2. DB에 상품 저장
