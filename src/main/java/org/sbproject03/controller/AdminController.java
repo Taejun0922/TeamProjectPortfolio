@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -195,34 +196,42 @@ public class AdminController {
             String uploadDir = "D:/upload/images/";
 
             // 대표이미지 저장
-            if (dto.getMainImage() != null && !dto.getMainImage().isEmpty()) {
-                String fileName = "IMG_" + productId + ".jpg";
-                File mainFile = new File(uploadDir + fileName);
-                dto.getMainImage().transferTo(mainFile);
+            MultipartFile mainImage = dto.getMainImage();
+            MultipartFile detailImage = dto.getDetailImage();
 
-                // 만약 detailImage와 같은 파일이라면 복사해서 저장
-                if (dto.getDetailImage() != null && !dto.getDetailImage().isEmpty()
-                        && dto.getMainImage().getOriginalFilename().equals(dto.getDetailImage().getOriginalFilename())) {
+            if (mainImage != null && !mainImage.isEmpty()) {
+                String mainFileName = "IMG_" + productId + ".jpg";
+                String detailFileName = "IMG_Detail_" + productId + ".jpg";
 
-                    String detailFileName = "IMG_Detail_" + productId + ".jpg";
-                    File detailFile = new File(uploadDir + detailFileName);
+                File mainFile = new File(uploadDir + mainFileName);
+                File detailFile = new File(uploadDir + detailFileName);
+
+                // 두 파일의 이름이 같은지 여부만 미리 저장 (파일 스트림에 접근 X)
+                boolean isSameFile = detailImage != null
+                        && !detailImage.isEmpty()
+                        && mainImage.getOriginalFilename().equals(detailImage.getOriginalFilename());
+
+                // 메모리로 한 번 읽어서 재사용 (주의: 대용량 이미지일 경우 리스크 있음)
+                byte[] mainImageBytes = mainImage.getBytes();
+                Files.write(mainFile.toPath(), mainImageBytes);
+
+                if (isSameFile) {
+                    // 같은 파일이면 복사
                     Files.copy(mainFile.toPath(), detailFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                } else if (dto.getDetailImage() != null && !dto.getDetailImage().isEmpty()) {
-                    // 파일이 다르면 그대로 저장
-                    String detailFileName = "IMG_Detail_" + productId + ".jpg";
-                    dto.getDetailImage().transferTo(new File(uploadDir + detailFileName));
+                } else if (detailImage != null && !detailImage.isEmpty()) {
+                    // 다른 파일이면 따로 저장
+                    detailImage.transferTo(detailFile);
                 }
             }
 
             // Product 객체로 변환 후 저장
             productService.registerNewProduct(dto);
 
-            return "redirect:/admin/products"; // 상품 목록 페이지로 이동
+            return "redirect:/admin/product/register?registerSuccess=true"; // 상품 목록 페이지로 이동
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "상품 등록 중 오류가 발생했습니다.");
-            return "redirect:/admin/product/register?registerSuccess=true";
+            return "redirect:/admin/product/register";
         }
     }
-
 }
