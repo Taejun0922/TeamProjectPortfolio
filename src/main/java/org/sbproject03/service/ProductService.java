@@ -104,4 +104,14 @@ public class ProductService {
     }
   }
 
+  // 상품명 또는 상품 ID로 검색 (페이징 포함)
+  public Page<Product> searchByNameOrId(String keyword, Pageable pageable) {
+    return productRepository.findByProductNameContainingIgnoreCaseOrProductIdContainingIgnoreCase(keyword, keyword, pageable);
+  }
+
+  // 전체 상품 조회 (페이징)
+  public Page<Product> findAll(Pageable pageable) {
+    return productRepository.findAll(pageable);
+  }
+
 }

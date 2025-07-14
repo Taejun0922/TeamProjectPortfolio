@@ -1,6 +1,7 @@
 package org.sbproject03.controller;
 
 import org.sbproject03.domain.Member;
+import org.sbproject03.domain.Product;
 import org.sbproject03.domain.ProductOrder;
 import org.sbproject03.domain.ProductOrderItem;
 import org.sbproject03.dto.ProductRegister;
@@ -233,5 +234,27 @@ public class AdminController {
             model.addAttribute("error", "상품 등록 중 오류가 발생했습니다.");
             return "redirect:/admin/product/register";
         }
+    }
+
+    // ✅ 상품 목록 조회 (검색 + 페이징 포함)
+    @GetMapping("/productList")
+    public String getProductList(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, 20, Sort.by("productId").descending());
+        Page<Product> productPage;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            productPage = productService.searchByNameOrId(keyword, pageable);
+        } else {
+            productPage = productService.findAll(pageable);
+        }
+
+        model.addAttribute("productList", productPage);
+        model.addAttribute("keyword", keyword);
+
+        return "admin/productList"; // → templates/admin/productList.html
     }
 }

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- js 코드 -->
+    <script th:src="@{/js/main.js}"></script>
+
+    <!-- css 코드 -->
+    <link th:href="@{/css/top.css}" rel="stylesheet">
+    <link th:href="@{/css/bottom.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div id="wrap">
+    <!-- 헤더 -->
+    <th:block th:replace="~{/module/top.html}"></th:block>
+
+    <!-- 본문 -->
+    <div class="container mt-5">
+        <h2 class="fw-bold mb-4">상품 목록</h2>
+
+        <!-- 🔍 검색 폼 -->
+        <form th:action="@{/admin/products}" method="get" class="mb-3 d-flex justify-content-end">
+            <input type="text" name="keyword" class="form-control me-2" placeholder="상품명 또는 ID 검색" style="width: 250px;" th:value="${keyword}">
+            <button type="submit" class="btn btn-outline-dark">검색</button>
+        </form>
+
+        <!-- 📋 상품 리스트 테이블 -->
+        <div class="table-responsive">
+            <table class="table table-hover text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>상품 ID</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>재고</th>
+                    <th>카테고리</th>
+                    <th>베스트</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${productList.content}">
+                    <td>
+                        <a th:href="@{'/admin/product/view/' + ${product.productId}}" th:text="${product.productId}"></a>
+                    </td>
+                    <td th:text="${product.productName}"></td>
+                    <td th:text="${#numbers.formatInteger(product.productPrice, 0, 'COMMA')} + '원'"></td>
+                    <td th:text="${product.productStock}"></td>
+                    <td th:text="${product.productCategory}"></td>
+                    <td>
+                        <span th:if="${product.isBestItem}" class="badge bg-success">Best</span>
+                        <span th:unless="${product.isBestItem}" class="text-muted">-</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/admin/product/view/' + ${product.productId}}"
+                           class="btn btn-outline-secondary btn-sm">관리</a>
+                    </td>
+                </tr>
+                <tr th:if="${productList.empty}">
+                    <td colspan="7" class="text-muted">상품이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이징 -->
+        <nav th:if="${productList.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- 이전 -->
+                <li class="page-item" th:classappend="${productList.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/products(page=${productList.number - 1}, keyword=${keyword})}">이전</a>
+                </li>
+
+                <!-- 페이지 번호 -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, productList.totalPages - 1)}"
+                    th:classappend="${i == productList.number} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/admin/products(page=${i}, keyword=${keyword})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <!-- 다음 -->
+                <li class="page-item" th:classappend="${productList.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/products(page=${productList.number + 1}, keyword=${keyword})}">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{/module/bottom.html}"></th:block>
+</div>
+</body>
+</html>
