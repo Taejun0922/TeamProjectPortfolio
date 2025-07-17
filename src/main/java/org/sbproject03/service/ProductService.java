@@ -114,4 +114,52 @@ public class ProductService {
     return productRepository.findAll(pageable);
   }
 
+  // 상품 수정 메서드
+  public void updateProduct(Product updatedProduct, MultipartFile mainImage, MultipartFile detailImage) throws IOException {
+    Product existing = productRepository.findByProductId(updatedProduct.getProductId());
+
+    if (existing == null) {
+      throw new IllegalArgumentException("해당 상품이 존재하지 않습니다: " + updatedProduct.getProductId());
+    }
+
+    // 필드 업데이트
+    existing.setProductName(updatedProduct.getProductName());
+    existing.setProductPrice(updatedProduct.getProductPrice());
+    existing.setProductStock(updatedProduct.getProductStock());
+    existing.setProductCategory(updatedProduct.getProductCategory().toUpperCase());
+    existing.setProductDescription(updatedProduct.getProductDescription());
+    existing.setBestItem(updatedProduct.isBestItem());
+
+    // 이미지 파일명 수정 (기존 규칙에 맞춤)
+    String mainImageName = "IMG_" + existing.getProductId() + ".jpg";
+    String detailImageName = "IMG_Detail_" + existing.getProductId() + ".jpg";
+
+    if (mainImage != null && !mainImage.isEmpty()) {
+      File mainImageFile = new File(baseDir, mainImageName);
+      mainImage.transferTo(mainImageFile);
+    }
+
+    if (detailImage != null && !detailImage.isEmpty()) {
+      File detailImageFile = new File(baseDir, detailImageName);
+      detailImage.transferTo(detailImageFile);
+    }
+
+    productRepository.save(existing);
+  }
+
+  // 상품 삭제 메서드
+  public void deleteById(String productId) {
+    Product product = productRepository.findByProductId(productId);
+    if (product != null) {
+      productRepository.delete(product);
+
+      // 이미지도 삭제하려면 아래 코드 사용
+      String mainImagePath = baseDir + "IMG_" + productId + "_main.jpg";
+      String detailImagePath = baseDir + "IMG_" + productId + "_detail.jpg";
+
+      new File(mainImagePath).delete();
+      new File(detailImagePath).delete();
+    }
+  }
+
 }

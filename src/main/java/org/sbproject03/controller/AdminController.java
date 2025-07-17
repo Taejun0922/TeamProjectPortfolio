@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
@@ -257,4 +258,30 @@ public class AdminController {
 
         return "admin/productList"; // → templates/admin/productList.html
     }
+
+    // 상품 정보 페이지로 이동
+    @GetMapping("/product/view/{id}")
+    public String viewProduct(@PathVariable String id, Model model) {
+        Product product = productService.getProductById(id);
+        model.addAttribute("product", product);
+        return "admin/productDetail";
+    }
+
+    // 상품 정보 수정
+    @PostMapping("/product/update")
+    public String updateProduct(@ModelAttribute Product product,
+                                @RequestParam("mainImage") MultipartFile mainImage,
+                                @RequestParam("detailImage") MultipartFile detailImage) throws IOException {
+        productService.updateProduct(product, mainImage, detailImage);
+        return "redirect:/admin/product/view/" + product.getProductId();
+    }
+
+    // 상품 정보 삭제
+    @PostMapping("/product/delete")
+    public String deleteProduct(@RequestParam String productId) {
+        productService.deleteById(productId);
+        return "redirect:/admin/productList";
+    }
+
+
 }

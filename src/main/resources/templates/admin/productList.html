@@ -23,7 +23,7 @@
         <h2 class="fw-bold mb-4">상품 목록</h2>
 
         <!-- 🔍 검색 폼 -->
-        <form th:action="@{/admin/products}" method="get" class="mb-3 d-flex justify-content-end">
+        <form th:action="@{/admin/productList}" method="get" class="mb-3 d-flex justify-content-end">
             <input type="text" name="keyword" class="form-control me-2" placeholder="상품명 또는 ID 검색" style="width: 250px;" th:value="${keyword}">
             <button type="submit" class="btn btn-outline-dark">검색</button>
         </form>
@@ -72,20 +72,20 @@
             <ul class="pagination justify-content-center">
                 <!-- 이전 -->
                 <li class="page-item" th:classappend="${productList.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/products(page=${productList.number - 1}, keyword=${keyword})}">이전</a>
+                    <a class="page-link" th:href="@{/admin/productList(page=${productList.number - 1}, keyword=${keyword})}">이전</a>
                 </li>
 
                 <!-- 페이지 번호 -->
                 <li class="page-item" th:each="i : ${#numbers.sequence(0, productList.totalPages - 1)}"
                     th:classappend="${i == productList.number} ? 'active'">
                     <a class="page-link"
-                       th:href="@{/admin/products(page=${i}, keyword=${keyword})}"
+                       th:href="@{/admin/productList(page=${i}, keyword=${keyword})}"
                        th:text="${i + 1}">1</a>
                 </li>
 
                 <!-- 다음 -->
                 <li class="page-item" th:classappend="${productList.last} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/products(page=${productList.number + 1}, keyword=${keyword})}">다음</a>
+                    <a class="page-link" th:href="@{/admin/productList(page=${productList.number + 1}, keyword=${keyword})}">다음</a>
                 </li>
             </ul>
         </nav>
