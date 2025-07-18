@@ -252,4 +252,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     showRegisterSuccessToastIfNeeded();
+
+    // 삭제 버튼 클릭 시 confirm 후 삭제 폼 제출 함수
+        function confirmDelete() {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                const deleteForm = document.getElementById('productDeleteForm');
+                if (deleteForm) {
+                    deleteForm.submit();
+                } else {
+                    console.warn("삭제 폼이 존재하지 않습니다.");
+                }
+            }
+        }
+
+        // 삭제 버튼에 이벤트 연결
+        const deleteBtn = document.getElementById("deleteBtn");
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                confirmDelete();
+            });
+        }
 });

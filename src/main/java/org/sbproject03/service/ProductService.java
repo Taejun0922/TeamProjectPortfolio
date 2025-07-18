@@ -115,24 +115,39 @@ public class ProductService {
   }
 
   // 상품 수정 메서드
-  public void updateProduct(Product updatedProduct, MultipartFile mainImage, MultipartFile detailImage) throws IOException {
+  public Product updateProduct(Product updatedProduct, MultipartFile mainImage, MultipartFile detailImage) throws IOException {
     Product existing = productRepository.findByProductId(updatedProduct.getProductId());
 
     if (existing == null) {
       throw new IllegalArgumentException("해당 상품이 존재하지 않습니다: " + updatedProduct.getProductId());
     }
 
+    // 카테고리 변경 여부 확인
+    String oldCategory = existing.getProductCategory();
+    String newCategory = updatedProduct.getProductCategory().toUpperCase();
+
+    boolean isCategoryChanged = !oldCategory.equalsIgnoreCase(newCategory);
+
+    if (isCategoryChanged) {
+      Integer maxNumber = productRepository.findMaxNumberByPrefix(newCategory);
+      int newNumber = (maxNumber != null ? maxNumber : 0) + 1;
+      String newProductId = newCategory + "_" + newNumber;
+
+      existing.setProductId(newProductId);
+      existing.setProductCategory(newCategory);
+    }
+
     // 필드 업데이트
     existing.setProductName(updatedProduct.getProductName());
     existing.setProductPrice(updatedProduct.getProductPrice());
     existing.setProductStock(updatedProduct.getProductStock());
-    existing.setProductCategory(updatedProduct.getProductCategory().toUpperCase());
     existing.setProductDescription(updatedProduct.getProductDescription());
     existing.setBestItem(updatedProduct.isBestItem());
 
-    // 이미지 파일명 수정 (기존 규칙에 맞춤)
-    String mainImageName = "IMG_" + existing.getProductId() + ".jpg";
-    String detailImageName = "IMG_Detail_" + existing.getProductId() + ".jpg";
+    // 이미지 저장
+    String imageId = existing.getProductId(); // 변경된 ID 기준
+    String mainImageName = "IMG_" + imageId + ".jpg";
+    String detailImageName = "IMG_Detail_" + imageId + ".jpg";
 
     if (mainImage != null && !mainImage.isEmpty()) {
       File mainImageFile = new File(baseDir, mainImageName);
@@ -144,7 +159,7 @@ public class ProductService {
       detailImage.transferTo(detailImageFile);
     }
 
-    productRepository.save(existing);
+    return productRepository.save(existing); // 변경된 ID 반영을 위해 리턴
   }
 
   // 상품 삭제 메서드
@@ -161,5 +176,4 @@ public class ProductService {
       new File(detailImagePath).delete();
     }
   }
-
 }

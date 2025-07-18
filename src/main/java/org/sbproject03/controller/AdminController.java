@@ -272,8 +272,9 @@ public class AdminController {
     public String updateProduct(@ModelAttribute Product product,
                                 @RequestParam("mainImage") MultipartFile mainImage,
                                 @RequestParam("detailImage") MultipartFile detailImage) throws IOException {
-        productService.updateProduct(product, mainImage, detailImage);
-        return "redirect:/admin/product/view/" + product.getProductId();
+        // 수정된 상품을 반환받아야 변경된 ID를 사용할 수 있음
+        Product savedProduct = productService.updateProduct(product, mainImage, detailImage);
+        return "redirect:/admin/product/view/" + savedProduct.getProductId();
     }
 
     // 상품 정보 삭제
@@ -282,6 +283,4 @@ public class AdminController {
         productService.deleteById(productId);
         return "redirect:/admin/productList";
     }
-
-
 }

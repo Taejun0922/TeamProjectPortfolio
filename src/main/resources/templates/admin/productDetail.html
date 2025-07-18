@@ -4,99 +4,122 @@
     <meta charset="UTF-8">
     <title>상품 상세/수정</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/product.js}"></script>
+
+    <!-- CSS -->
+    <link th:href="@{/css/top.css}" rel="stylesheet">
+    <link th:href="@{/css/bottom.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="fw-bold mb-4">상품 상세 / 수정</h2>
+<div id="wrap">
+    <!-- 헤더 -->
+    <th:block th:replace="~{/module/top.html}"></th:block>
 
-    <form th:action="@{/admin/product/update}" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label class="form-label">상품 ID</label>
-            <input type="text" class="form-control" name="productId" th:value="${product.productId}" readonly>
-        </div>
+    <!-- 본문 -->
+    <div class="container mt-5 mb-3">
+        <h2 class="fw-bold mb-4">상품 상세 / 수정</h2>
 
-        <div class="mb-3">
-            <label class="form-label">상품명</label>
-            <input type="text" class="form-control" name="productName" th:value="${product.productName}" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">가격 (원)</label>
-            <input type="number" class="form-control" name="productPrice" th:value="${product.productPrice}" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">재고</label>
-            <input type="number" class="form-control" name="productStock" th:value="${product.productStock}" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">카테고리</label><br>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="productCategory" id="categoryTent" value="Tent"
-                       th:checked="${product.productCategory == 'Tent'}" required>
-                <label class="form-check-label" for="categoryTent">Tent</label>
+        <!-- 수정 폼 -->
+        <form th:action="@{/admin/product/update}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">상품 ID</label>
+                <input type="text" class="form-control" name="productId" th:value="${product.productId}" readonly>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="productCategory" id="categorySleepingBag" value="Sleeping_Bag"
-                       th:checked="${product.productCategory == 'Sleeping_Bag'}">
-                <label class="form-check-label" for="categorySleepingBag">Sleeping Bag</label>
+
+            <div class="mb-3">
+                <label class="form-label">상품명</label>
+                <input type="text" class="form-control" name="productName" th:value="${product.productName}" required>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="productCategory" id="categoryGadget" value="Gadget"
-                       th:checked="${product.productCategory == 'Gadget'}">
-                <label class="form-check-label" for="categoryGadget">Gadget</label>
+
+            <div class="mb-3">
+                <label class="form-label">가격 (원)</label>
+                <input type="number" class="form-control" name="productPrice" th:value="${product.productPrice}" required>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="productCategory" id="categoryCooker" value="Cooker"
-                       th:checked="${product.productCategory == 'Cooker'}">
-                <label class="form-check-label" for="categoryCooker">Cooker</label>
+
+            <div class="mb-3">
+                <label class="form-label">재고</label>
+                <input type="number" class="form-control" name="productStock" th:value="${product.productStock}" required>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">상품 설명</label>
-            <textarea class="form-control" name="productDescription" rows="4" required
-                      th:text="${product.productDescription}"></textarea>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">카테고리</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="productCategory" id="categoryTent" value="Tent"
+                           th:checked="${product.productCategory == 'TENT'}" required>
+                    <label class="form-check-label" for="categoryTent">Tent</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="productCategory" id="categorySleepingBag" value="Sleeping_Bag"
+                           th:checked="${product.productCategory == 'SLEEPING_BAG'}">
+                    <label class="form-check-label" for="categorySleepingBag">Sleeping Bag</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="productCategory" id="categoryGadget" value="Gadget"
+                           th:checked="${product.productCategory == 'GADGET'}">
+                    <label class="form-check-label" for="categoryGadget">Gadget</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="productCategory" id="categoryCooker" value="Cooker"
+                           th:checked="${product.productCategory == 'COOKER'}">
+                    <label class="form-check-label" for="categoryCooker">Cooker</label>
+                </div>
+            </div>
 
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" name="isBestItem" th:checked="${product.bestItem}">
-            <label class="form-check-label">베스트 상품 여부</label>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">상품 설명</label>
+                <textarea class="form-control" name="productDescription" rows="4" required
+                          th:text="${product.productDescription}"></textarea>
+            </div>
 
-        <!-- Main 이미지 -->
-        <div class="mb-3">
-            <label class="form-label">메인 이미지</label><br>
-            <img th:src="@{'/images/IMG_' + ${product.productId} + '.jpg'}"
-                 alt="메인 이미지"
-                 class="img-thumbnail mb-2"
-                 style="max-width: 200px;"
-                 onerror="this.onerror=null; this.src='/images/default_main.jpg';" />
-            <input type="file" class="form-control" name="mainImage">
-        </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" name="isBestItem" th:checked="${product.bestItem}">
+                <label class="form-check-label">베스트 상품 여부</label>
+            </div>
 
-        <!-- 상세 이미지 -->
-        <div class="mb-3">
-            <label class="form-label">상세 이미지</label><br>
-            <img th:src="@{'/images/IMG_Detail_' + ${product.productId} + '.jpg'}"
-                 alt="상세 이미지"
-                 class="img-thumbnail mb-2"
-                 style="max-width: 200px;"
-                 onerror="this.onerror=null; this.src='/images/default_detail.jpg';" />
-            <input type="file" class="form-control" name="detailImage">
-        </div>
+            <!-- 메인 이미지 -->
+            <div class="mb-3">
+                <label class="form-label">메인 이미지</label><br>
+                <img th:src="@{'/images/IMG_' + ${product.productId} + '.jpg'}"
+                     alt="메인 이미지"
+                     class="img-thumbnail mb-2"
+                     style="max-width: 200px;"
+                     onerror="this.onerror=null; this.src='/images/default_main.jpg';" />
+                <input type="file" class="form-control" name="mainImage">
+            </div>
 
-        <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-primary">수정하기</button>
+            <!-- 상세 이미지 -->
+            <div class="mb-3">
+                <label class="form-label">상세 이미지</label><br>
+                <img th:src="@{'/images/IMG_Detail_' + ${product.productId} + '.jpg'}"
+                     alt="상세 이미지"
+                     class="img-thumbnail mb-2"
+                     style="max-width: 200px;"
+                     onerror="this.onerror=null; this.src='/images/default_detail.jpg';" />
+                <input type="file" class="form-control" name="detailImage">
+            </div>
 
-            <!-- 삭제 -->
-            <form th:action="@{/admin/product/delete}" method="post">
-                <input type="hidden" name="productId" th:value="${product.productId}">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제하기</button>
-            </form>
-        </div>
-    </form>
+            <!-- 버튼: 수정 / 삭제 -->
+            <div class="d-flex justify-content-between mt-4">
+                <!-- 삭제 버튼 (왼쪽) -->
+                <button type="button" id="deleteBtn" class="btn btn-danger">삭제하기</button>
+
+                <!-- 수정 버튼 (오른쪽) -->
+                <button type="submit" class="btn btn-primary">수정하기</button>
+            </div>
+        </form>
+
+        <!-- 삭제용 별도 폼 (숨김) -->
+        <form id="productDeleteForm" th:action="@{/admin/product/delete}" method="post" style="display:none;">
+            <input type="hidden" name="productId" th:value="${product.productId}">
+        </form>
+    </div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{/module/bottom.html}"></th:block>
 </div>
 </body>
 </html>
